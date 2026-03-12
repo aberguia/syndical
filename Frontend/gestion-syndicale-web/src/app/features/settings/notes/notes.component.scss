@@ -1,0 +1,131 @@
+.notes-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    button {
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .filters-card {
+    margin-bottom: 24px;
+
+    .filters-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 16px;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+
+      .search-field {
+        flex: 1;
+      }
+
+      mat-form-field {
+        width: 100%;
+      }
+    }
+  }
+
+  .table-card {
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .notes-table {
+      width: 100%;
+      
+      th {
+        font-weight: 600;
+        color: #666;
+      }
+
+      .note-text-cell {
+        max-width: 400px;
+
+        .note-text-truncated {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: block;
+        }
+      }
+
+      tr.mat-row:hover {
+        background-color: #f5f5f5;
+      }
+
+      .mat-cell {
+        padding: 12px 8px;
+      }
+
+      .actions-cell {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 4px;
+      }
+
+      .mat-column-actions {
+        width: 160px;
+
+        .mat-mdc-cell {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 4px;
+        }
+
+        button {
+          flex-shrink: 0;
+        }
+      }
+
+      .mat-column-createdAt {
+        width: 180px;
+      }
+
+      .mat-column-buildingCodeOrName {
+        width: 150px;
+      }
+
+      .mat-column-apartmentNumber {
+        width: 120px;
+      }
+    }
+
+    mat-paginator {
+      border-top: 1px solid #e0e0e0;
+    }
+
+    tr.mat-row.no-data-row {
+      height: 200px;
+      
+      td {
+        text-align: center;
+        color: #999;
+        font-style: italic;
+      }
+    }
+  }
+}

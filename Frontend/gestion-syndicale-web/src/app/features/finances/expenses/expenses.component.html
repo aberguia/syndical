@@ -1,0 +1,137 @@
+<div class="expenses-container">
+  <div class="header">
+    <h2>Gestion des Dépenses</h2>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon>
+      Ajouter une Dépense
+    </button>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Année *</mat-label>
+          <mat-select [formControl]="yearControl">
+            <mat-option *ngFor="let year of years" [value]="year">{{year}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Mois</mat-label>
+          <mat-select [formControl]="monthControl">
+            <mat-option *ngFor="let month of months" [value]="month.value">{{month.label}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="Description, fournisseur, référence">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Total -->
+  <mat-card class="total-card">
+    <h3>Total: <strong>{{totalAmount | number:'1.2-2'}} DH</strong></h3>
+    <span class="count">{{totalCount}} dépense(s)</span>
+  </mat-card>
+
+  <!-- Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <div *ngIf="!loading">
+        <table mat-table [dataSource]="dataSource" class="expenses-table">
+          
+          <ng-container matColumnDef="expenseDate">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let expense">{{expense.expenseDate | date:'dd/MM/yyyy'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="categoryName">
+            <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+            <td mat-cell *matCellDef="let expense">
+              <mat-chip class="category-chip">{{expense.categoryName}}</mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Montant</th>
+            <td mat-cell *matCellDef="let expense" class="amount-cell">
+              {{expense.amount | number:'1.2-2'}} DH
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let expense" [matTooltip]="expense.description">
+              {{getTruncatedDescription(expense.description)}}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="invoiceNumber">
+            <th mat-header-cell *matHeaderCellDef>Référence</th>
+            <td mat-cell *matCellDef="let expense">{{expense.invoiceNumber || '-'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="supplierName">
+            <th mat-header-cell *matHeaderCellDef>Fournisseur</th>
+            <td mat-cell *matCellDef="let expense">{{expense.supplierName || '-'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="attachmentsCount">
+            <th mat-header-cell *matHeaderCellDef>Pièces</th>
+            <td mat-cell *matCellDef="let expense">
+              <button mat-icon-button 
+                      (click)="openAttachmentsDialog(expense)" 
+                      [matBadge]="expense.attachmentsCount" 
+                      [matBadgeHidden]="!expense.attachmentsCount || expense.attachmentsCount === 0"
+                      matBadgeColor="primary"
+                      matTooltip="Gérer les pièces jointes">
+                <mat-icon>attachment</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let expense" class="actions-cell">
+              <button mat-icon-button (click)="openEditDialog(expense)" matTooltip="Modifier" color="primary">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button *ngIf="isSuperAdmin" mat-icon-button (click)="deleteExpense(expense)" 
+                      matTooltip="Supprimer" color="warn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- No data row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+              Aucune dépense trouvée
+            </td>
+          </tr>
+        </table>
+
+        <mat-paginator 
+          [length]="totalCount"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

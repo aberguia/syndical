@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+html, body { 
+  height: 100%; 
+}
+
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
+
+/* Style global pour les badges Material - Amélioration visibilité */
+.mat-badge-content {
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+  z-index: 100 !important;
+  border: 2px solid white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+}

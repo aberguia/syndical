@@ -1,0 +1,102 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Modifier une voiture' : 'Ajouter une voiture' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="carForm">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Marque</mat-label>
+        <mat-select formControlName="brand">
+          <mat-option *ngFor="let brand of carBrands" [value]="brand.value">
+            {{ brand.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="carForm.get('brand')?.hasError('required')">Requis</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="plate-section">
+      <h3>Plaque d'immatriculation</h3>
+      <div class="plate-inputs">
+        <mat-form-field appearance="outline" class="plate-part">
+          <mat-label>Partie 1</mat-label>
+          <input matInput type="number" formControlName="platePart1" placeholder="12345">
+          <mat-error *ngIf="carForm.get('platePart1')?.hasError('required')">Requis</mat-error>
+          <mat-error *ngIf="carForm.get('platePart1')?.hasError('min') || carForm.get('platePart1')?.hasError('max')">
+            1-99999
+          </mat-error>
+        </mat-form-field>
+
+        <span class="separator">-</span>
+
+        <mat-form-field appearance="outline" class="plate-part plate-letter">
+          <mat-label>Lettre</mat-label>
+          <input matInput formControlName="platePart2" placeholder="أ" maxlength="1">
+          <mat-error *ngIf="carForm.get('platePart2')?.hasError('required')">Requis</mat-error>
+        </mat-form-field>
+
+        <span class="separator">-</span>
+
+        <mat-form-field appearance="outline" class="plate-part plate-last">
+          <mat-label>Partie 3</mat-label>
+          <input matInput type="number" formControlName="platePart3" placeholder="67">
+          <mat-error *ngIf="carForm.get('platePart3')?.hasError('required')">Requis</mat-error>
+          <mat-error *ngIf="carForm.get('platePart3')?.hasError('min') || carForm.get('platePart3')?.hasError('max')">
+            1-99
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <p class="hint">Format: 12345-أ-67</p>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Type de voiture</mat-label>
+        <mat-select formControlName="carType">
+          <mat-option *ngFor="let type of carTypes" [value]="type.value">
+            {{ type.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="carForm.get('carType')?.hasError('required')">Requis</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Immeuble</mat-label>
+        <mat-select formControlName="buildingId">
+          <mat-option *ngFor="let building of buildings" [value]="building.id">
+            {{ building.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="carForm.get('buildingId')?.hasError('required')">Requis</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Adhérent</mat-label>
+        <mat-select formControlName="memberId" [disabled]="!carForm.get('buildingId')?.value">
+          <mat-option *ngFor="let member of members" [value]="member.id">
+            {{ member.displayText }}
+          </mat-option>
+        </mat-select>
+        <mat-hint *ngIf="!carForm.get('buildingId')?.value">Sélectionnez d'abord un immeuble</mat-hint>
+        <mat-error *ngIf="carForm.get('memberId')?.hasError('required')">Requis</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes (optionnel)</mat-label>
+        <textarea matInput formControlName="notes" rows="3" placeholder="Remarques..."></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="carForm.invalid">
+    {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+  </button>
+</mat-dialog-actions>

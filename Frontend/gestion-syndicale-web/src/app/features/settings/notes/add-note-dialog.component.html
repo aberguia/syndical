@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>Ajouter une Note</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="noteForm" class="note-form">
+    
+    <!-- Building Selection -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Immeuble *</mat-label>
+      <mat-select formControlName="buildingId">
+        <mat-option *ngFor="let building of buildings" [value]="building.id">
+          {{ building.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="noteForm.get('buildingId')?.hasError('required')">
+        L'immeuble est obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Apartment Selection (Optional) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Appartement (optionnel)</mat-label>
+      <mat-select formControlName="apartmentId" [disabled]="loadingApartments || apartments.length === 0">
+        <mat-option [value]="null">Tous les appartements</mat-option>
+        <mat-option *ngFor="let apartment of apartments" [value]="apartment.id">
+          {{ apartment.apartmentNumber }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="apartments.length === 0 && noteForm.get('buildingId')?.value">
+        Aucun appartement disponible pour cet immeuble
+      </mat-hint>
+    </mat-form-field>
+
+    <!-- Member Selection (DISABLED until building selected) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Adhérent *</mat-label>
+      <mat-select formControlName="memberId" [disabled]="isMemberSelectDisabled() || loadingMembers">
+        <mat-option *ngFor="let member of members" [value]="member.memberId">
+          {{ member.displayText }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="isMemberSelectDisabled()" class="disabled-hint">
+        ⚠️ Renseigner avant le numéro/code d'immeuble.
+      </mat-hint>
+      <mat-hint *ngIf="!isMemberSelectDisabled() && members.length === 0 && !loadingMembers">
+        Aucun adhérent trouvé
+      </mat-hint>
+      <mat-error *ngIf="noteForm.get('memberId')?.hasError('required')">
+        L'adhérent est obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Note Text -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Note *</mat-label>
+      <textarea 
+        matInput 
+        formControlName="noteText" 
+        rows="6"
+        placeholder="Saisir la note ou remarque concernant cet adhérent..."
+        maxlength="4000"></textarea>
+      <mat-hint align="end">{{ noteForm.get('noteText')?.value?.length || 0 }}/4000</mat-hint>
+      <mat-error *ngIf="noteForm.get('noteText')?.hasError('required')">
+        La note est obligatoire
+      </mat-error>
+      <mat-error *ngIf="noteForm.get('noteText')?.hasError('maxlength')">
+        La note ne doit pas dépasser 4000 caractères
+      </mat-error>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">Annuler</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="onSubmit()" 
+    [disabled]="noteForm.invalid || loading">
+    <mat-spinner *ngIf="loading" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+    Enregistrer
+  </button>
+</mat-dialog-actions>

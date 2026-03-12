@@ -1,0 +1,45 @@
+<div class="validate-otp-container">
+  <mat-card>
+    <div class="logo-container">
+      <img src="assets/images/logo.svg" alt="Logo Syndicale" class="validate-otp-logo">
+    </div>
+    <div class="validate-otp-header">
+      <h1>Validation du compte</h1>
+      <p>Entrez le code à 6 chiffres envoyé à <strong>{{ email }}</strong></p>
+    </div>
+
+    <form [formGroup]="otpForm" (ngSubmit)="onSubmit()" class="validate-otp-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Code OTP</mat-label>
+        <input matInput formControlName="otpCode" placeholder="123456" maxlength="6">
+        <mat-error *ngIf="otpForm.get('otpCode')?.hasError('required')">
+          Le code est requis
+        </mat-error>
+        <mat-error *ngIf="otpForm.get('otpCode')?.hasError('pattern')">
+          Le code doit contenir 6 chiffres
+        </mat-error>
+      </mat-form-field>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading || otpForm.invalid">
+        <span *ngIf="!loading">Valider</span>
+        <mat-spinner *ngIf="loading" diameter="20" style="display: inline-block; margin: 0 auto;"></mat-spinner>
+      </button>
+
+      <button mat-button type="button" (click)="resendOtp()" [disabled]="loading" class="resend-button">
+        Renvoyer le code
+      </button>
+    </form>
+
+    <div class="form-footer">
+      <a routerLink="/auth/login">Retour à la connexion</a>
+    </div>
+  </mat-card>
+</div>

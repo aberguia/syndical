@@ -1,0 +1,83 @@
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin: -8px 0 16px 0;
+}
+
+.upload-section {
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+
+  button {
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  .help-text {
+    margin: 8px 0 0 0;
+    font-size: 12px;
+    color: #666;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #ddd;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+mat-list {
+  mat-list-item {
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    mat-icon[matListItemIcon] {
+      margin-right: 16px;
+    }
+  }
+}
+
+mat-dialog-content {
+  min-width: 600px;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    min-width: auto;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+}

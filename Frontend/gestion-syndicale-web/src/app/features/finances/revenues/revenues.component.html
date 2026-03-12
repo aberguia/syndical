@@ -1,0 +1,173 @@
+<div class="revenues-container">
+  <!-- En-tête -->
+  <div class="header">
+    <h2>Gestion des Revenus</h2>
+  </div>
+
+  <!-- Bandeau Total Annuel Global -->
+  <mat-card class="total-card" *ngIf="totals">
+    <h3>Total des revenus {{ totals.year }} : <strong>{{ totals.grandTotal | number:'1.2-2' }} DH</strong></h3>
+    <div class="breakdown">
+      <span>Cotisations: {{ totals.contributionsTotal | number:'1.2-2' }} DH</span>
+      <span class="separator">•</span>
+      <span>Autres revenus: {{ totals.otherRevenuesTotal | number:'1.2-2' }} DH</span>
+    </div>
+  </mat-card>
+
+  <!-- PARTIE 1: Cotisations Mensuelles (Matrice) -->
+  <mat-card class="section-card">
+    <div class="section-header">
+      <div>
+        <h3>Cotisations mensuelles {{ currentYear }}</h3>
+        <p class="config-info" *ngIf="contributionsMatrix">
+          Montant cotisation mensuelle (config): {{ contributionsMatrix.monthlyContributionAmount | number:'1.2-2' }} DH
+        </p>
+      </div>
+      <button mat-raised-button color="primary" (click)="openAddContributionDialog()" *ngIf="isSuperAdmin">
+        <mat-icon>add</mat-icon>
+        Ajouter une cotisation
+      </button>
+    </div>
+
+    <div class="matrix-container" *ngIf="contributionsMatrix && !loading">
+      <table class="contributions-matrix">
+        <thead>
+          <tr>
+            <th class="building-header">Immeuble</th>
+            <th *ngFor="let month of monthNames">{{ month }}</th>
+            <th class="total-header">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let building of contributionsMatrix.buildings">
+            <td class="building-cell">{{ building.buildingCode }}</td>
+            <td *ngFor="let amount of building.monthlyAmounts" class="amount-cell">
+              {{ amount > 0 ? (amount | number:'1.0-0') : '-' }}
+            </td>
+            <td class="total-cell">{{ building.rowTotal | number:'1.0-0' }}</td>
+          </tr>
+          <tr class="totals-row">
+            <td class="building-cell"><strong>Total</strong></td>
+            <td *ngFor="let total of contributionsMatrix.monthlyTotals" class="total-cell">
+              <strong>{{ total > 0 ? (total | number:'1.0-0') : '-' }}</strong>
+            </td>
+            <td class="grand-total-cell">
+              <strong>{{ contributionsMatrix.yearTotal | number:'1.0-0' }}</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="loading-container" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div class="year-total" *ngIf="contributionsMatrix && !loading">
+      <strong>Total cotisations année {{ currentYear }}: {{ contributionsMatrix.yearTotal | number:'1.2-2' }} DH</strong>
+    </div>
+  </mat-card>
+
+  <!-- PARTIE 2: Autres Revenus (Table CRUD) -->
+  <mat-card class="section-card">
+    <div class="section-header">
+      <h3>Autres revenus</h3>
+      <button mat-raised-button color="primary" (click)="openAddOtherRevenueDialog()" *ngIf="isSuperAdmin">
+        <mat-icon>add</mat-icon>
+        Ajouter un revenu
+      </button>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Titre, description...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container" *ngIf="!loading">
+      <table mat-table [dataSource]="otherRevenues" class="revenues-table">
+        
+        <ng-container matColumnDef="revenueDate">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let revenue">{{ revenue.revenueDate | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Titre</th>
+          <td mat-cell *matCellDef="let revenue">{{ revenue.title }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Montant</th>
+          <td mat-cell *matCellDef="let revenue" class="amount-cell">
+            {{ revenue.amount | number:'1.2-2' }} DH
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let revenue">
+            <span class="description-text">{{ revenue.description || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="attachmentsCount">
+          <th mat-header-cell *matHeaderCellDef>Pièces</th>
+          <td mat-cell *matCellDef="let revenue">
+            <button mat-icon-button 
+                    (click)="openAttachmentsDialog(revenue)" 
+                    [matBadge]="revenue.attachmentsCount" 
+                    [matBadgeHidden]="!revenue.attachmentsCount || revenue.attachmentsCount === 0"
+                    matBadgeColor="primary"
+                    matTooltip="Gérer les pièces jointes">
+              <mat-icon>attachment</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let revenue" class="actions-cell">
+            <button mat-icon-button (click)="openEditOtherRevenueDialog(revenue)" 
+                    matTooltip="Modifier" color="primary" *ngIf="isSuperAdmin">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteOtherRevenue(revenue)" 
+                    matTooltip="Supprimer" color="warn" *ngIf="isSuperAdmin">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div class="no-data" *ngIf="otherRevenues.length === 0">
+        <p>Aucun autre revenu enregistré pour l'année {{ currentYear }}</p>
+      </div>
+    </div>
+
+    <div class="loading-container" *ngIf="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator *ngIf="!loading"
+                   [length]="totalOtherRevenuesCount"
+                   [pageSize]="pageSize"
+                   [pageIndex]="pageIndex"
+                   [pageSizeOptions]="[10, 25, 50, 100]"
+                   (page)="onPageChange($event)"
+                   showFirstLastButtons>
+    </mat-paginator>
+
+    <div class="year-total" *ngIf="!loading">
+      <strong>Total autres revenus année {{ currentYear }}: {{ totalOtherRevenuesAmount | number:'1.2-2' }} DH</strong>
+    </div>
+  </mat-card>
+</div>

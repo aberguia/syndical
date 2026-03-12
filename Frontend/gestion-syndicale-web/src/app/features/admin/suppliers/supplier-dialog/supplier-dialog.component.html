@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Modifier le fournisseur' : 'Ajouter un fournisseur' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nom du fournisseur *</mat-label>
+        <input matInput formControlName="name" placeholder="Ex: Plomberie Dupont">
+        <mat-error *ngIf="form.get('name')?.invalid">
+          {{ getErrorMessage('name') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Catégorie de service *</mat-label>
+        <mat-select formControlName="serviceCategory">
+          <mat-option *ngFor="let cat of serviceCategories" [value]="cat.value">
+            {{ cat.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('serviceCategory')?.invalid">
+          {{ getErrorMessage('serviceCategory') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput 
+                  formControlName="description" 
+                  rows="3"
+                  placeholder="Description du fournisseur..."></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row two-columns">
+      <mat-form-field appearance="outline">
+        <mat-label>Téléphone</mat-label>
+        <input matInput formControlName="phone" placeholder="0X XX XX XX XX">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" placeholder="contact@fournisseur.fr">
+        <mat-error *ngIf="form.get('email')?.invalid">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Adresse</mat-label>
+        <textarea matInput 
+                  formControlName="address" 
+                  rows="2"
+                  placeholder="Adresse complète..."></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row" *ngIf="isEditMode">
+      <mat-slide-toggle formControlName="isActive" color="primary">
+        Fournisseur actif
+      </mat-slide-toggle>
+      <p class="helper-text">Les fournisseurs inactifs n'apparaîtront pas dans les listes de sélection</p>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isLoading">
+    Annuler
+  </button>
+  <button mat-raised-button 
+          color="primary" 
+          (click)="onSubmit()" 
+          [disabled]="form.invalid || isLoading">
+    {{ isLoading ? 'Enregistrement...' : (isEditMode ? 'Modifier' : 'Créer') }}
+  </button>
+</mat-dialog-actions>

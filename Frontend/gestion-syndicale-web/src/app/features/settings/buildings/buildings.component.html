@@ -1,0 +1,92 @@
+<div class="buildings-container">
+  <div class="header">
+    <h1>Gestion des Immeubles</h1>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon>
+      Ajouter un immeuble
+    </button>
+  </div>
+
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Rechercher</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Nom, code...">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div *ngIf="loading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading" class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="buildings-table">
+      
+      <ng-container matColumnDef="buildingNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
+        <td mat-cell *matCellDef="let building">{{ building.buildingNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let building">{{ building.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="floorCount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Étages</th>
+        <td mat-cell *matCellDef="let building">{{ building.floorCount }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="apartmentsCount">
+        <th mat-header-cell *matHeaderCellDef>Appartements</th>
+        <td mat-cell *matCellDef="let building">{{ building.apartmentsCount || 0 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <td mat-cell *matCellDef="let building">
+          <mat-chip [class.active-chip]="building.isActive" [class.inactive-chip]="!building.isActive">
+            {{ building.isActive ? 'Actif' : 'Inactif' }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cotisations">
+        <th mat-header-cell *matHeaderCellDef>Cotisations (année en cours)</th>
+        <td mat-cell *matCellDef="let building" class="cotisations-cell">
+          <app-payment-status-bar 
+            [data]="getPaymentStatus(building.id)"
+            displayMode="percentage">
+          </app-payment-status-bar>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let building">
+          <button mat-icon-button color="accent" (click)="viewApartments(building)" matTooltip="Détails (voir les appartements)">
+            <mat-icon>manage_search</mat-icon>
+          </button>
+          <button mat-icon-button style="color: #e53935;" (click)="openPaymentsReport(building)" matTooltip="Générer état des paiements (PDF)">
+            <mat-icon>picture_as_pdf</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="openEditDialog(building)" matTooltip="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteBuilding(building)" matTooltip="Supprimer">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          Aucun immeuble trouvé
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

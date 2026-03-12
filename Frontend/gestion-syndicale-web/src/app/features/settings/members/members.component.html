@@ -1,0 +1,134 @@
+<div class="members-container">
+  <div class="header">
+    <h1>Gestion des Adhérents</h1>
+    <button 
+      *ngIf="isSuperAdmin" 
+      mat-raised-button 
+      color="primary" 
+      (click)="openAddDialog()">
+      <mat-icon>person_add</mat-icon>
+      Ajouter un adhérent
+    </button>
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Nom, prénom, email...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Filtrer par rôle</mat-label>
+      <mat-select [formControl]="roleFilter">
+        <mat-option value="">Tous les rôles</mat-option>
+        <mat-option value="SuperAdmin">Super Admin</mat-option>
+        <mat-option value="Admin">Administrateur</mat-option>
+        <mat-option value="User">Adhérent</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading" class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="members-table">
+      
+      <ng-container matColumnDef="fullName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom complet</th>
+        <td mat-cell *matCellDef="let member">
+          {{ getFullName(member) }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let member">{{ member.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="phoneNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Téléphone</th>
+        <td mat-cell *matCellDef="let member">{{ member.phoneNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rôle</th>
+        <td mat-cell *matCellDef="let member">
+          <mat-chip [class]="getRoleClass(member.role)">
+            {{ getRoleLabel(member.role) }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="building">
+        <th mat-header-cell *matHeaderCellDef>Immeuble</th>
+        <td mat-cell *matCellDef="let member">
+          {{ member.buildingNumber || '-' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="apartment">
+        <th mat-header-cell *matHeaderCellDef>Appartement</th>
+        <td mat-cell *matCellDef="let member">
+          {{ member.apartmentNumber || '-' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <td mat-cell *matCellDef="let member">
+          <mat-chip [class.active-chip]="member.isActive" [class.inactive-chip]="!member.isActive">
+            {{ member.isActive ? 'Actif' : 'Inactif' }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let member">
+          <button 
+            *ngIf="isAdmin || isSuperAdmin"
+            mat-icon-button 
+            color="primary" 
+            (click)="openContactDialog(member)" 
+            matTooltip="Contacter par email">
+            <mat-icon>email</mat-icon>
+          </button>
+          <button 
+            *ngIf="isSuperAdmin"
+            mat-icon-button 
+            color="accent" 
+            (click)="openEditDialog(member)" 
+            matTooltip="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button 
+            *ngIf="isSuperAdmin"
+            mat-icon-button 
+            color="warn" 
+            (click)="deleteMember(member)" 
+            matTooltip="Supprimer">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          Aucun adhérent trouvé
+        </td>
+      </tr>
+
+    </table>
+  </div>
+
+  <mat-paginator 
+    [pageSizeOptions]="[10, 25, 50, 100]" 
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

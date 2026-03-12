@@ -1,0 +1,310 @@
+<div class="building-ranking-widget">
+  <!-- Loading State -->
+  <mat-card *ngIf="loading" class="loading-card">
+    <mat-card-content>
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement du classement...</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Error State -->
+  <mat-card *ngIf="error && !loading" class="error-card">
+    <mat-card-content>
+      <div class="error-container">
+        <mat-icon>error_outline</mat-icon>
+        <p>Erreur lors du chargement du classement</p>
+        <button mat-raised-button color="primary" (click)="loadRanking()">
+          Réessayer
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error && ranking" class="ranking-content">
+    
+    <!-- Gamification Message -->
+    <mat-card class="message-card">
+      <mat-card-content>
+        <div class="message-content">
+          <span class="message-icon">{{ messageIcon }}</span>
+          <p class="message-text">{{ message }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Desktop View -->
+    <div class="desktop-view">
+      
+      <!-- My Building Card (if not in top 3) -->
+      <mat-card *ngIf="myBuilding && myBuilding.rank > 3" class="my-building-card highlighted">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>home</mat-icon>
+          <mat-card-title>Votre immeuble</mat-card-title>
+          <mat-card-subtitle>Position {{ myBuilding.rank }} / {{ ranking.items.length }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="my-building-content">
+            <div class="tube-container">
+              <div class="tube-3d" 
+                   [style.height.px]="getTubeHeight(getAnimatedRate(myBuilding.buildingId))">
+                <div class="tube-inner"></div>
+                <div class="tube-highlight"></div>
+                <div class="tube-label">
+                  <span class="rate-number">{{ getAnimatedRate(myBuilding.buildingId) | number:'1.0-1' }}%</span>
+                </div>
+              </div>
+              <div class="tube-base">{{ myBuilding.buildingName }}</div>
+            </div>
+            <div class="building-details">
+              <p class="detail-line">
+                <span class="label">Collecté:</span>
+                <span class="value">{{ formatAmount(myBuilding.paidAmount) }}</span>
+              </p>
+              <p class="detail-line">
+                <span class="label">Attendu:</span>
+                <span class="value">{{ formatAmount(myBuilding.expectedAmount) }}</span>
+              </p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Podium Top 3 -->
+      <mat-card class="podium-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>emoji_events</mat-icon>
+          <mat-card-title>Top 3 des Immeubles</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="podium-container">
+            <div *ngFor="let building of topThree; let i = index" 
+                 class="podium-item"
+                 [class.my-building]="isMyBuilding(building.buildingId)"
+                 [style.order]="getPodiumOrder(i)">
+              
+              <div class="rank-badge" [class]="getRankBadgeColor(building.rank)">
+                <mat-icon *ngIf="building.rank === 1">workspace_premium</mat-icon>
+                <mat-icon *ngIf="building.rank === 2">military_tech</mat-icon>
+                <mat-icon *ngIf="building.rank === 3">star</mat-icon>
+                <span class="rank-number">#{{ building.rank }}</span>
+              </div>
+
+              <div class="tube-3d-podium" 
+                   [style.height.px]="getTubeHeight(getAnimatedRate(building.buildingId))">
+                <div class="tube-inner"></div>
+                <div class="tube-highlight"></div>
+                <div class="tube-glow" [class]="getRankBadgeColor(building.rank)"></div>
+                <div class="tube-label">
+                  <span class="rate-number">{{ getAnimatedRate(building.buildingId) | number:'1.0-1' }}%</span>
+                </div>
+              </div>
+
+              <div class="podium-base" [style.height.px]="getPodiumHeight(i)">
+                <div class="podium-shine"></div>
+              </div>
+
+              <div class="building-name">
+                {{ building.buildingName }}
+                <span *ngIf="isMyBuilding(building.buildingId)" class="my-badge">Votre immeuble</span>
+              </div>
+
+              <div class="building-stats" 
+                   [matTooltip]="'Collecté: ' + formatAmount(building.paidAmount) + ' / Attendu: ' + formatAmount(building.expectedAmount)">
+                <mat-icon>info</mat-icon>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Top 10 List -->
+      <mat-card class="top-list-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>format_list_numbered</mat-icon>
+          <mat-card-title>Top 10 Complet</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="top-list">
+            <div *ngFor="let building of topTen" 
+                 class="list-item"
+                 [class.my-building]="isMyBuilding(building.buildingId)">
+              
+              <div class="rank-indicator" [class]="getRankBadgeColor(building.rank)">
+                {{ building.rank }}
+              </div>
+
+              <div class="building-info">
+                <span class="building-name">
+                  {{ building.buildingName }}
+                  <span *ngIf="isMyBuilding(building.buildingId)" class="my-badge-small">Vous</span>
+                </span>
+                <span class="building-amount" 
+                      [matTooltip]="'Collecté: ' + formatAmount(building.paidAmount) + ' / Attendu: ' + formatAmount(building.expectedAmount)">
+                  {{ formatAmount(building.paidAmount) }} / {{ formatAmount(building.expectedAmount) }}
+                </span>
+              </div>
+
+              <div class="horizontal-tube-container">
+                <div class="horizontal-tube-3d">
+                  <div class="horizontal-tube-fill" 
+                       [style.width.%]="getAnimatedRate(building.buildingId)">
+                    <div class="horizontal-tube-shine"></div>
+                  </div>
+                </div>
+                <span class="rate-text">{{ getAnimatedRate(building.buildingId) | number:'1.0-1' }}%</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Mobile View -->
+    <div class="mobile-view">
+      
+      <!-- My Building Card -->
+      <mat-card *ngIf="myBuilding" class="my-building-mobile highlighted">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>home</mat-icon>
+          <mat-card-title>Votre immeuble</mat-card-title>
+          <mat-card-subtitle>{{ myBuilding.buildingName }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="my-building-mobile-content">
+            <div class="position-badge">
+              <span class="position-number">{{ myBuilding.rank }}</span>
+              <span class="position-text">/ {{ ranking.items.length }}</span>
+            </div>
+            <div class="tube-horizontal-container">
+              <div class="tube-horizontal-3d">
+                <div class="tube-horizontal-fill" 
+                     [style.width.%]="getAnimatedRate(myBuilding.buildingId)">
+                  <div class="tube-horizontal-shine"></div>
+                </div>
+              </div>
+              <div class="rate-display">
+                {{ getAnimatedRate(myBuilding.buildingId) | number:'1.0-1' }}%
+              </div>
+            </div>
+            <div class="amounts-row">
+              <div class="amount-col">
+                <span class="amount-label">Collecté</span>
+                <span class="amount-value">{{ formatAmount(myBuilding.paidAmount) }}</span>
+              </div>
+              <div class="amount-col">
+                <span class="amount-label">Attendu</span>
+                <span class="amount-value">{{ formatAmount(myBuilding.expectedAmount) }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Carousel Top 3 -->
+      <mat-card class="carousel-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>emoji_events</mat-icon>
+          <mat-card-title>Top 3</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="carousel-container">
+            <button class="carousel-btn prev" 
+                    (click)="prevCarousel()" 
+                    [disabled]="currentCarouselIndex === 0">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <div class="carousel-track">
+              <div *ngFor="let building of topThree; let i = index" 
+                   class="carousel-item"
+                   [class.active]="currentCarouselIndex === i"
+                   [class.my-building]="isMyBuilding(building.buildingId)">
+                
+                <div class="rank-badge-large" [class]="getRankBadgeColor(building.rank)">
+                  <mat-icon *ngIf="building.rank === 1">workspace_premium</mat-icon>
+                  <mat-icon *ngIf="building.rank === 2">military_tech</mat-icon>
+                  <mat-icon *ngIf="building.rank === 3">star</mat-icon>
+                </div>
+
+                <div class="carousel-tube-container">
+                  <div class="carousel-tube-3d" 
+                       [style.height.px]="getTubeHeight(getAnimatedRate(building.buildingId)) * 0.8">
+                    <div class="tube-inner"></div>
+                    <div class="tube-highlight"></div>
+                    <div class="tube-label">
+                      <span class="rate-number">{{ getAnimatedRate(building.buildingId) | number:'1.0-1' }}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carousel-building-name">
+                  {{ building.buildingName }}
+                  <span *ngIf="isMyBuilding(building.buildingId)" class="my-badge">Vous</span>
+                </div>
+
+                <div class="carousel-stats">
+                  <p>{{ formatAmount(building.paidAmount) }}</p>
+                  <p class="separator">/</p>
+                  <p>{{ formatAmount(building.expectedAmount) }}</p>
+                </div>
+              </div>
+            </div>
+
+            <button class="carousel-btn next" 
+                    (click)="nextCarousel()" 
+                    [disabled]="currentCarouselIndex === 2">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+
+          <div class="carousel-dots">
+            <button *ngFor="let building of topThree; let i = index"
+                    class="dot"
+                    [class.active]="currentCarouselIndex === i"
+                    (click)="goToCarouselIndex(i)">
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Top 10 Compact List -->
+      <mat-card class="top-list-mobile">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>format_list_numbered</mat-icon>
+          <mat-card-title>Top 10</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="compact-list">
+            <div *ngFor="let building of topTen" 
+                 class="compact-item"
+                 [class.my-building]="isMyBuilding(building.buildingId)">
+              
+              <div class="compact-rank" [class]="getRankBadgeColor(building.rank)">
+                {{ building.rank }}
+              </div>
+
+              <div class="compact-info">
+                <div class="compact-name">
+                  {{ building.buildingName }}
+                  <span *ngIf="isMyBuilding(building.buildingId)" class="my-badge-small">Vous</span>
+                </div>
+                <div class="compact-bar-container">
+                  <div class="compact-bar">
+                    <div class="compact-bar-fill" 
+                         [style.width.%]="getAnimatedRate(building.buildingId)">
+                    </div>
+                  </div>
+                  <span class="compact-rate">{{ getAnimatedRate(building.buildingId) | number:'1.0-1' }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+  </div>
+</div>

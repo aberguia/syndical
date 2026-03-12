@@ -1,0 +1,271 @@
+.parking-container {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+.content {
+  width: 100%;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #fff3cd;
+  color: #856404;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+
+  mat-icon {
+    font-size: 20px;
+  }
+}
+
+.main-counter {
+  margin-bottom: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.counter-display {
+  text-align: center;
+}
+
+.counter-label {
+  font-size: 24px;
+  font-weight: 300;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.counter-value {
+  font-size: 120px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 24px;
+  font-family: 'Roboto Mono', monospace;
+
+  .current {
+    color: #fff;
+  }
+
+  .separator {
+    opacity: 0.5;
+    margin: 0 16px;
+  }
+
+  .total {
+    opacity: 0.7;
+    font-size: 90px;
+  }
+}
+
+.available-places {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 500;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  &.status-ok {
+    background-color: rgba(76, 175, 80, 0.2);
+    border: 2px solid rgba(76, 175, 80, 0.5);
+  }
+
+  &.status-full {
+    background-color: rgba(255, 152, 0, 0.2);
+    border: 2px solid rgba(255, 152, 0, 0.5);
+  }
+
+  &.status-exceeded {
+    background-color: rgba(244, 67, 54, 0.2);
+    border: 2px solid rgba(244, 67, 54, 0.5);
+  }
+
+  .warning-text {
+    color: #ffa726;
+  }
+
+  .error-text {
+    color: #ef5350;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.action-btn {
+  height: 120px !important;
+  width: 280px !important;
+  font-size: 32px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.3s ease !important;
+
+  mat-icon {
+    font-size: 48px !important;
+    width: 48px !important;
+    height: 48px !important;
+    margin-right: 16px !important;
+  }
+
+  &:hover:not([disabled]) {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+}
+
+.entry-btn {
+  background-color: #4caf50 !important;
+}
+
+.exit-btn {
+  background-color: #f44336 !important;
+}
+
+.manual-adjustment {
+  margin-bottom: 24px;
+  background-color: #fff9e6;
+  border: 2px solid #ffd740;
+
+  mat-card-header {
+    margin-bottom: 16px;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      color: #f57c00;
+
+      mat-icon {
+        color: #f57c00;
+      }
+    }
+  }
+
+  .info-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    margin-bottom: 16px;
+
+    mat-icon {
+      color: #2196f3;
+      font-size: 20px;
+    }
+  }
+
+  .adjustment-form {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    mat-form-field {
+      flex: 1;
+    }
+
+    button {
+      height: 56px;
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.info-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #666;
+  font-size: 14px;
+  margin-top: 24px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .counter-value {
+    font-size: 80px;
+
+    .total {
+      font-size: 60px;
+    }
+  }
+
+  .available-places {
+    font-size: 20px;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .action-btn {
+    width: 100% !important;
+    height: 100px !important;
+  }
+
+  .adjustment-form {
+    flex-direction: column;
+
+    mat-form-field, button {
+      width: 100%;
+    }
+  }
+}

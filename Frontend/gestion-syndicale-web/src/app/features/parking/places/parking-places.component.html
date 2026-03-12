@@ -1,0 +1,86 @@
+<div class="parking-container">
+  <div *ngIf="loading" class="loading">
+    <mat-spinner diameter="60"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && status" class="content">
+    <!-- Statut de connexion -->
+    <div class="connection-status" *ngIf="!isSignalRConnected">
+      <mat-icon>wifi_off</mat-icon>
+      <span>Mode polling (mise à jour toutes les 10s)</span>
+    </div>
+
+    <!-- Grand affichage du compteur -->
+    <mat-card class="main-counter">
+      <div class="counter-display">
+        <div class="counter-label">Voitures présentes</div>
+        <div class="counter-value">
+          <span class="current">{{ status.currentCars }}</span>
+          <span class="separator">/</span>
+          <span class="total">{{ status.totalPlaces }}</span>
+        </div>
+        
+        <div class="available-places" [ngClass]="getStatusClass()">
+          <mat-icon>{{ getStatusIcon() }}</mat-icon>
+          <span *ngIf="status.status === 'OK'">
+            {{ status.availablePlaces }} places disponibles
+          </span>
+          <span *ngIf="status.status === 'Plein'" class="warning-text">
+            Parking plein
+          </span>
+          <span *ngIf="status.status === 'Dépassé'" class="error-text">
+            Parking dépassé de {{ status.currentCars - status.totalPlaces }} voiture(s)
+          </span>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Boutons d'action -->
+    <div class="action-buttons">
+      <button mat-fab extended color="primary" class="action-btn entry-btn" (click)="increment()">
+        <mat-icon>add</mat-icon>
+        Entrée
+      </button>
+      
+      <button mat-fab extended color="warn" class="action-btn exit-btn" (click)="decrement()" 
+              [disabled]="status.currentCars === 0">
+        <mat-icon>remove</mat-icon>
+        Sortie
+      </button>
+    </div>
+
+    <!-- Ajustement manuel (SuperAdmin uniquement) -->
+    <mat-card *ngIf="isSuperAdmin" class="manual-adjustment">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>admin_panel_settings</mat-icon>
+          Ajustement manuel (SuperAdmin)
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="info-text">
+          <mat-icon>info</mat-icon>
+          Utilisez cette fonction uniquement pour corriger le compteur en cas d'erreur.
+        </p>
+        
+        <div class="adjustment-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre de voitures actuel</mat-label>
+            <input matInput type="number" [(ngModel)]="manualCurrentCars" min="0">
+          </mat-form-field>
+          
+          <button mat-raised-button color="accent" (click)="saveManualAdjustment()">
+            <mat-icon>save</mat-icon>
+            Enregistrer
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Informations -->
+    <div class="info-footer">
+      <mat-icon>schedule</mat-icon>
+      <span>Dernière mise à jour : {{ status.updatedAt | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+    </div>
+  </div>
+</div>

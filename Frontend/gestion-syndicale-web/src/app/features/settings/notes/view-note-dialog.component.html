@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>Détails de la Note</h2>
+
+<mat-dialog-content>
+  <div class="note-details">
+    
+    <div class="section">
+      <h3>Informations de l'Adhérent</h3>
+      <div class="info-grid">
+        <div class="info-row">
+          <span class="label">Adhérent :</span>
+          <span class="value">{{ data.memberFullName }}</span>
+        </div>
+        <div class="info-row" *ngIf="data.buildingCodeOrName">
+          <span class="label">Immeuble :</span>
+          <span class="value">{{ data.buildingCodeOrName }}</span>
+        </div>
+        <div class="info-row" *ngIf="data.apartmentNumber">
+          <span class="label">Appartement :</span>
+          <span class="value">{{ data.apartmentNumber }}</span>
+        </div>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="section">
+      <h3>Note</h3>
+      <div class="note-text">
+        {{ data.noteText }}
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="section">
+      <h3>Informations de Suivi</h3>
+      <div class="info-grid">
+        <div class="info-row">
+          <span class="label">Créée le :</span>
+          <span class="value">{{ data.createdAt | date: 'dd/MM/yyyy à HH:mm' }}</span>
+        </div>
+        <div class="info-row" *ngIf="data.createdByName">
+          <span class="label">Créée par :</span>
+          <span class="value">{{ data.createdByName }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="onClose()">Fermer</button>
+</mat-dialog-actions>

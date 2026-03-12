@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>Pièces jointes</h2>
+<p class="subtitle">{{ data.expenseDescription }}</p>
+
+<mat-dialog-content>
+  <div class="upload-section">
+    <input #fileInput type="file" accept=".jpg,.jpeg,.png,.pdf" 
+           (change)="onFileSelected($event)" style="display: none">
+    <button mat-raised-button color="primary" (click)="fileInput.click()" [disabled]="uploading">
+      <mat-icon>upload_file</mat-icon>
+      Ajouter un fichier
+    </button>
+    <p class="help-text">Formats acceptés : JPG, PNG, PDF (max 5MB)</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && attachments.length === 0" class="empty-state">
+    <mat-icon>attachment</mat-icon>
+    <p>Aucune pièce jointe</p>
+  </div>
+
+  <mat-list *ngIf="!loading && attachments.length > 0">
+    <mat-list-item *ngFor="let attachment of attachments">
+      <mat-icon matListItemIcon [color]="attachment.fileType.includes('pdf') ? 'warn' : 'primary'">
+        {{ getFileIcon(attachment.fileType) }}
+      </mat-icon>
+      <div matListItemTitle>{{ attachment.fileName }}</div>
+      <div matListItemLine>
+        {{ formatFileSize(attachment.fileSize) }} • 
+        {{ attachment.uploadedAt | date:'dd/MM/yyyy HH:mm' }} • 
+        {{ attachment.uploadedByName }}
+      </div>
+      <div matListItemMeta class="actions">
+        <button mat-icon-button (click)="downloadAttachment(attachment)" matTooltip="Télécharger">
+          <mat-icon>download</mat-icon>
+        </button>
+        <button *ngIf="isSuperAdmin" mat-icon-button color="warn" 
+                (click)="deleteAttachment(attachment)" matTooltip="Supprimer">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </mat-list-item>
+  </mat-list>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Fermer</button>
+</mat-dialog-actions>

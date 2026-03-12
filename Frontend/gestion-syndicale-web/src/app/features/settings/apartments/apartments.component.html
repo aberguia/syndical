@@ -1,0 +1,125 @@
+<div class="apartments-container">
+  <div class="header">
+    <h1>Gestion des Appartements</h1>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon>
+      Ajouter un appartement
+    </button>
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Filtrer par immeuble</mat-label>
+      <mat-select [formControl]="buildingFilter">
+        <mat-option [value]="0">Tous les immeubles</mat-option>
+        <mat-option *ngFor="let building of buildings" [value]="building.id">
+          {{ building.buildingNumber }} - {{ building.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Numéro, étage...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading" class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="apartments-table">
+      
+      <ng-container matColumnDef="buildingNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Immeuble</th>
+        <td mat-cell *matCellDef="let apartment">
+          {{ apartment.buildingNumber || apartment.buildingName }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="apartmentNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>N° Appartement</th>
+        <td mat-cell *matCellDef="let apartment">{{ apartment.apartmentNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="floor">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Étage</th>
+        <td mat-cell *matCellDef="let apartment">{{ apartment.floor }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="adherent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Adhérent</th>
+        <td mat-cell *matCellDef="let apartment">
+          <span 
+            *ngIf="apartment.memberFullName" 
+            class="adherent-link" 
+            (click)="viewMemberDetails(apartment)">
+            {{ apartment.memberFullName }}
+          </span>
+          <span 
+            *ngIf="!apartment.memberFullName" 
+            class="no-adherent">
+            —
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <td mat-cell *matCellDef="let apartment">
+          <mat-chip [class.active-chip]="apartment.isActive" [class.inactive-chip]="!apartment.isActive">
+            {{ apartment.isActive ? 'Actif' : 'Inactif' }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cotisations">
+        <th mat-header-cell *matHeaderCellDef>Cotisations (année en cours)</th>
+        <td mat-cell *matCellDef="let apartment" class="cotisations-cell">
+          <app-payment-status-bar [data]="getPaymentStatus(apartment.id)"></app-payment-status-bar>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let apartment">
+          <button mat-icon-button color="primary" (click)="openEditDialog(apartment)" matTooltip="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button 
+            *ngIf="isSuperAdminOrAdmin"
+            mat-icon-button 
+            color="accent" 
+            (click)="openPaymentDialog(apartment)" 
+            matTooltip="Enregistrer un paiement">
+            <mat-icon>attach_money</mat-icon>
+          </button>
+          <button 
+            *ngIf="isSuperAdminOrAdmin"
+            mat-icon-button 
+            color="primary" 
+            (click)="openReceiptDialog(apartment)" 
+            matTooltip="Générer un reçu PDF">
+            <mat-icon>receipt_long</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteApartment(apartment)" matTooltip="Supprimer">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          Aucun appartement trouvé
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

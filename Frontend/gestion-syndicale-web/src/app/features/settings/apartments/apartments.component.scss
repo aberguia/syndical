@@ -1,0 +1,99 @@
+.apartments-container {
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #333;
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .filter-field {
+    min-width: 250px;
+  }
+
+  .search-field {
+    flex: 1;
+    max-width: 400px;
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.apartments-table {
+  width: 100%;
+}
+
+.cotisations-cell {
+  padding: 12px 16px !important;
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.active-chip {
+  background-color: #e8f5e9 !important;
+  color: #4caf50 !important;
+}
+
+.inactive-chip {
+  background-color: #ffebee !important;
+  color: #f44336 !important;
+}
+
+.mat-row:hover {
+  background-color: #f5f5f5;
+}
+
+// Styles pour la colonne adhérent
+.adherent-link {
+  color: #1976d2;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  
+  &:hover {
+    text-decoration: underline;
+    color: #1565c0;
+  }
+}
+
+.no-adherent {
+  color: #999;
+  font-style: italic;
+}
+
+// Style pour les boutons d'action
+td.mat-cell {
+  button[color="accent"] {
+    mat-icon {
+      color: #ff9800;
+    }
+  }
+  
+  button:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}

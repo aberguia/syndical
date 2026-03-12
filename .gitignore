@@ -1,0 +1,22 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+appsettings.Development.json
+
+# Angular
+node_modules/
+dist/
+.angular/
+
+# Variables d'environnement
+.env
+*.env
+
+# MySQL / secrets
+appsettings.json
+
+# Markdown
+*.md

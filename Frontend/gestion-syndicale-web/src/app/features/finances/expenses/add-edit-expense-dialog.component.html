@@ -1,0 +1,100 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Modifier la dépense' : 'Ajouter une dépense' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="expenseForm" class="expense-form">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date *</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="expenseDate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="expenseForm.get('expenseDate')?.hasError('required')">
+        La date est obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fournisseur</mat-label>
+      <mat-select formControlName="supplierId">
+        <mat-option [value]="null">Aucun fournisseur</mat-option>
+        <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+          {{ supplier.name }} - {{ supplier.serviceCategory }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="getSelectedSupplierCategory()">
+        Catégorie: {{ getSelectedSupplierCategory() }}
+      </mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Montant (MAD) *</mat-label>
+      <input matInput type="number" step="0.01" formControlName="amount" placeholder="0.00">
+      <span matPrefix>MAD&nbsp;</span>
+      <mat-error *ngIf="expenseForm.get('amount')?.hasError('required')">
+        Le montant est obligatoire
+      </mat-error>
+      <mat-error *ngIf="expenseForm.get('amount')?.hasError('min')">
+        Le montant doit être supérieur à 0
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description *</mat-label>
+      <textarea matInput formControlName="description" rows="3" 
+                placeholder="Décrivez la dépense..." maxlength="500"></textarea>
+      <mat-hint align="end">{{ expenseForm.get('description')?.value?.length || 0 }}/500</mat-hint>
+      <mat-error *ngIf="expenseForm.get('description')?.hasError('required')">
+        La description est obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Numéro de facture / Référence</mat-label>
+      <input matInput formControlName="invoiceNumber" placeholder="REF-2024-001">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes complémentaires</mat-label>
+      <textarea matInput formControlName="notes" rows="2"></textarea>
+    </mat-form-field>
+
+    <!-- Upload de factures (uniquement en mode création) -->
+    <div class="upload-section" *ngIf="!isEditMode">
+      <div class="upload-header">
+        <mat-icon>attach_file</mat-icon>
+        <span>Pièces jointes (Factures)</span>
+      </div>
+      <input #fileInput type="file" hidden (change)="onFileSelected($event)" 
+             accept=".jpg,.jpeg,.png,.pdf" multiple>
+      <button mat-stroked-button type="button" (click)="fileInput.click()" color="primary">
+        <mat-icon>cloud_upload</mat-icon>
+        Ajouter des fichiers
+      </button>
+      <div class="file-info">Formats acceptés: JPG, PNG, PDF (max 5MB par fichier)</div>
+      
+      <!-- Liste des fichiers sélectionnés -->
+      <div class="selected-files" *ngIf="selectedFiles.length > 0">
+        <div class="file-item" *ngFor="let file of selectedFiles; let i = index">
+          <mat-icon [color]="getFileIcon(file) === 'picture_as_pdf' ? 'warn' : 'primary'">{{ getFileIcon(file) }}</mat-icon>
+          <div class="file-info-item">
+            <div class="file-name">{{ file.name }}</div>
+            <div class="file-meta">{{ formatFileSize(file.size) }}</div>
+          </div>
+          <button mat-icon-button color="warn" (click)="removeFile(i)" type="button">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">Annuler</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" 
+          [disabled]="expenseForm.invalid || loading">
+    <mat-spinner *ngIf="loading" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+    {{ isEditMode ? 'Modifier' : 'Créer' }}
+  </button>
+</mat-dialog-actions>

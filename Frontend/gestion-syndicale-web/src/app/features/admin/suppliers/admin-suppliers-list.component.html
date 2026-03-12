@@ -1,0 +1,125 @@
+<div class="suppliers-container">
+  <div class="header">
+    <h2><mat-icon>store</mat-icon> Gestion des Fournisseurs</h2>
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon>
+      Ajouter un fournisseur
+    </button>
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher</mat-label>
+      <input matInput 
+             [value]="searchText" 
+             (input)="onSearch($event)" 
+             placeholder="Nom, téléphone, email...">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="category-field">
+      <mat-label>Catégorie de service</mat-label>
+      <mat-select [(ngModel)]="selectedCategory" (selectionChange)="onCategoryChange()">
+        <mat-option value="">Toutes les catégories</mat-option>
+        <mat-option *ngFor="let cat of serviceCategories" [value]="cat.value">
+          {{ cat.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button (click)="clearFilters()" *ngIf="selectedCategory || searchText">
+      <mat-icon>clear</mat-icon>
+      Réinitialiser
+    </button>
+  </div>
+
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="suppliers-table">
+      
+      <!-- Nom Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let supplier">
+          <strong>{{ supplier.name }}</strong>
+          <div class="description" *ngIf="supplier.description">{{ supplier.description }}</div>
+        </td>
+      </ng-container>
+
+      <!-- Catégorie Column -->
+      <ng-container matColumnDef="serviceCategory">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Catégorie</th>
+        <td mat-cell *matCellDef="let supplier">
+          <mat-chip>{{ supplier.serviceCategory }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Téléphone Column -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+        <td mat-cell *matCellDef="let supplier">
+          {{ supplier.phone || '-' }}
+        </td>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let supplier">
+          {{ supplier.email || '-' }}
+        </td>
+      </ng-container>
+
+      <!-- Statut Column -->
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <td mat-cell *matCellDef="let supplier">
+          <mat-chip [class.chip-active]="supplier.isActive" [class.chip-inactive]="!supplier.isActive">
+            {{ supplier.isActive ? 'Actif' : 'Inactif' }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Dépenses Column -->
+      <ng-container matColumnDef="expenseCount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Dépenses</th>
+        <td mat-cell *matCellDef="let supplier">
+          <span class="expense-count">{{ supplier.expenseCount }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let supplier">
+          <button mat-icon-button [matTooltip]="'Modifier'" (click)="openEditDialog(supplier)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button 
+                  [matTooltip]="supplier.expenseCount > 0 ? 'Impossible de supprimer (utilisé)' : 'Supprimer'"
+                  [disabled]="supplier.expenseCount > 0"
+                  (click)="deleteSupplier(supplier)">
+            <mat-icon [color]="supplier.expenseCount > 0 ? '' : 'warn'">delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          <div class="no-data">
+            <mat-icon>info</mat-icon>
+            <p *ngIf="!isLoading">Aucun fournisseur trouvé</p>
+            <p *ngIf="isLoading">Chargement...</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" 
+                   [pageSize]="10"
+                   showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</div>

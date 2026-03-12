@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- Left Building -->
+  <g id="left-building">
+    <!-- Main structure -->
+    <rect x="320" y="175" width="130" height="410" fill="#E5E5E5"/>
+    <!-- Orange vertical stripes -->
+    <rect x="345" y="175" width="20" height="410" fill="#F4A460"/>
+    <rect x="395" y="175" width="20" height="410" fill="#F4A460"/>
+    
+    <!-- Windows -->
+    <rect x="330" y="190" width="25" height="35" fill="#2C3E50"/>
+    <rect x="375" y="190" width="25" height="35" fill="#2C3E50"/>
+    <rect x="420" y="190" width="15" height="35" fill="#5A7FA5"/>
+    
+    <rect x="330" y="245" width="25" height="35" fill="#5A7FA5"/>
+    <rect x="375" y="245" width="25" height="35" fill="#2C3E50"/>
+    <rect x="420" y="245" width="15" height="35" fill="#2C3E50"/>
+    
+    <rect x="330" y="300" width="25" height="35" fill="#2C3E50"/>
+    <rect x="375" y="300" width="25" height="35" fill="#5A7FA5"/>
+    <rect x="420" y="300" width="15" height="35" fill="#5A7FA5"/>
+    
+    <rect x="330" y="355" width="25" height="35" fill="#5A7FA5"/>
+    <rect x="375" y="355" width="25" height="35" fill="#2C3E50"/>
+    <rect x="420" y="355" width="15" height="35" fill="#2C3E50"/>
+    
+    <rect x="330" y="515" width="25" height="35" fill="#F4A460"/>
+    <rect x="375" y="515" width="25" height="35" fill="#F4A460"/>
+  </g>
+  
+  <!-- Right Building (mirror of left) -->
+  <g id="right-building">
+    <rect x="750" y="175" width="130" height="410" fill="#E5E5E5"/>
+    <rect x="785" y="175" width="20" height="410" fill="#F4A460"/>
+    <rect x="835" y="175" width="20" height="410" fill="#F4A460"/>
+    
+    <rect x="760" y="190" width="15" height="35" fill="#5A7FA5"/>
+    <rect x="800" y="190" width="25" height="35" fill="#2C3E50"/>
+    <rect x="845" y="190" width="25" height="35" fill="#2C3E50"/>
+    
+    <rect x="760" y="245" width="15" height="35" fill="#2C3E50"/>
+    <rect x="800" y="245" width="25" height="35" fill="#2C3E50"/>
+    <rect x="845" y="245" width="25" height="35" fill="#5A7FA5"/>
+    
+    <rect x="760" y="300" width="15" height="35" fill="#5A7FA5"/>
+    <rect x="800" y="300" width="25" height="35" fill="#5A7FA5"/>
+    <rect x="845" y="300" width="25" height="35" fill="#2C3E50"/>
+    
+    <rect x="760" y="355" width="15" height="35" fill="#2C3E50"/>
+    <rect x="800" y="355" width="25" height="35" fill="#2C3E50"/>
+    <rect x="845" y="355" width="25" height="35" fill="#5A7FA5"/>
+    
+    <rect x="800" y="515" width="25" height="35" fill="#F4A460"/>
+    <rect x="845" y="515" width="25" height="35" fill="#F4A460"/>
+  </g>
+  
+  <!-- Central Mosque/Minaret -->
+  <g id="mosque">
+    <!-- Base platform -->
+    <rect x="470" y="560" width="260" height="25" fill="#E8E8E8"/>
+    <rect x="480" y="545" width="240" height="15" fill="#F5F5F5"/>
+    
+    <!-- Main minaret body -->
+    <rect x="520" y="195" width="160" height="350" fill="#D4904B"/>
+    
+    <!-- Middle white sections -->
+    <rect x="505" y="240" width="190" height="55" fill="#F5F5F5"/>
+    <rect x="510" y="245" width="180" height="45" fill="#FFFFFF"/>
+    
+    <rect x="505" y="330" width="190" height="75" fill="#F5F5F5"/>
+    <rect x="510" y="335" width="180" height="65" fill="#FFFFFF"/>
+    
+    <!-- Arched windows on minaret -->
+    <path d="M 555 215 L 555 235 Q 560 240 565 235 L 565 215 Z" fill="#2C3E50"/>
+    <path d="M 635 215 L 635 235 Q 640 240 645 235 L 645 215 Z" fill="#2C3E50"/>
+    
+    <path d="M 555 360 L 555 385 Q 565 395 575 385 L 575 360 Z" fill="#2C3E50"/>
+    <path d="M 625 360 L 625 385 Q 635 395 645 385 L 645 360 Z" fill="#2C3E50"/>
+    
+    <!-- Ground level windows -->
+    <rect x="535" y="505" width="35" height="40" fill="#F4A460"/>
+    <rect x="630" y="505" width="35" height="40" fill="#F4A460"/>
+    
+    <!-- Main door (arched) -->
+    <path d="M 580 500 L 580 545 L 620 545 L 620 500 Q 600 485 580 500 Z" fill="#2C3E50"/>
+    
+    <!-- Top levels of minaret -->
+    <rect x="540" y="165" width="120" height="30" fill="#5A7FA5"/>
+    <rect x="548" y="145" width="104" height="20" fill="#5A7FA5"/>
+    <rect x="560" y="125" width="80" height="20" fill="#D4904B"/>
+    
+    <!-- Dome top -->
+    <ellipse cx="600" cy="115" rx="35" ry="15" fill="#5A7FA5"/>
+    
+    <!-- Crescent moon on top -->
+    <circle cx="600" cy="95" r="8" fill="#2C3E50"/>
+    <path d="M 595 90 Q 605 95 595 100" fill="none" stroke="#2C3E50" stroke-width="2"/>
+    <circle cx="597" cy="95" r="6" fill="#2C3E50"/>
+  </g>
+  
+  <!-- Garden and path -->
+  <g id="garden">
+    <!-- Central path -->
+    <path d="M 480 545 L 510 720 L 690 720 L 720 545 Z" fill="#E8D4A8"/>
+    <!-- Path tile lines -->
+    <line x1="515" y1="600" x2="685" y2="600" stroke="#D4A574" stroke-width="2" opacity="0.6"/>
+    <line x1="520" y1="640" x2="680" y2="640" stroke="#D4A574" stroke-width="2" opacity="0.6"/>
+    <line x1="525" y1="680" x2="675" y2="680" stroke="#D4A574" stroke-width="2" opacity="0.6"/>
+    
+    <!-- Left garden area -->
+    <path d="M 280 545 Q 300 600 290 720 L 480 720 L 480 545 Z" fill="#5A8C3A"/>
+    <!-- Bushes -->
+    <ellipse cx="360" cy="600" rx="45" ry="28" fill="#4A7C2A"/>
+    <ellipse cx="380" cy="640" rx="50" ry="30" fill="#3A6B2A"/>
+    <ellipse cx="350" cy="680" rx="40" ry="25" fill="#4A7C2A"/>
+    
+    <!-- Right garden area -->
+    <path d="M 920 545 Q 900 600 910 720 L 720 720 L 720 545 Z" fill="#5A8C3A"/>
+    <ellipse cx="840" cy="600" rx="45" ry="28" fill="#4A7C2A"/>
+    <ellipse cx="820" cy="640" rx="50" ry="30" fill="#3A6B2A"/>
+    <ellipse cx="850" cy="680" rx="40" ry="25" fill="#4A7C2A"/>
+    
+    <!-- Left tree -->
+    <rect x="308" y="620" width="12" height="60" fill="#654321"/>
+    <path d="M 314 595 L 290 625 L 338 625 Z" fill="#2D5016"/>
+    <path d="M 314 605 L 295 630 L 333 630 Z" fill="#3A6B2A"/>
+    <path d="M 314 615 L 300 635 L 328 635 Z" fill="#4A7C2A"/>
+    
+    <!-- Right tree -->
+    <rect x="880" y="620" width="12" height="60" fill="#654321"/>
+    <path d="M 886 595 L 862 625 L 910 625 Z" fill="#2D5016"/>
+    <path d="M 886 605 L 867 630 L 905 630 Z" fill="#3A6B2A"/>
+    <path d="M 886 615 L 872 635 L 900 635 Z" fill="#4A7C2A"/>
+  </g>
+  
+  <!-- Ground platform edges -->
+  <rect x="270" y="545" width="660" height="20" fill="#CCCCCC"/>
+  <rect x="265" y="565" width="670" height="12" fill="#A8A8A8"/>
+</svg>

@@ -275,7 +275,6 @@ export class PaymentDialogComponent implements OnInit {
   loadingMonths = false;
   saving = false;
   currentYear: number;
-  currentMonth: number;
   paymentStatus: ApartmentPaymentStatus | null = null;
   paymentStatusMessage: string = '';
   buildings: any[] = [];
@@ -308,7 +307,6 @@ export class PaymentDialogComponent implements OnInit {
   ) {
     const now = new Date();
     this.currentYear = now.getFullYear();
-    this.currentMonth = now.getMonth() + 1; // 1-12
 
     // Générer les années disponibles (2022 -> année courante)
     for (let year = 2022; year <= this.currentYear; year++) {
@@ -460,18 +458,14 @@ export class PaymentDialogComponent implements OnInit {
     // Vérifier si cette année est l'année du premier impayé
     const isFirstUnpaidYear = this.paymentStatus?.firstUnpaidYear === year;
     const firstUnpaidMonth = this.paymentStatus?.firstUnpaidMonth || 1;
-    
+
     for (let i = 1; i <= 12; i++) {
       const isPaid = paidMonths.includes(i);
-      const isFuture = (year === this.currentYear && i > this.currentMonth);
-      
+
       let isDisabled = false;
-      
+
       if (isPaid) {
         // Mois déjà payé : désactivé
-        isDisabled = true;
-      } else if (isFuture) {
-        // Mois futur : désactivé
         isDisabled = true;
       } else if (!isFirstUnpaidYear) {
         // Année différente du premier impayé : tout désactivé
@@ -522,10 +516,7 @@ export class PaymentDialogComponent implements OnInit {
         const nextMonthIndex = this.months.findIndex(m => m.monthNumber === month.monthNumber + 1);
         if (nextMonthIndex !== -1) {
           const nextMonth = this.months[nextMonthIndex];
-          const selectedYear = this.form.get('year')?.value;
-          const isFuture = (selectedYear === this.currentYear && nextMonth.monthNumber > this.currentMonth);
-          
-          if (!nextMonth.isPaid && !isFuture) {
+          if (!nextMonth.isPaid) {
             nextMonth.isDisabled = false;
           }
         }
@@ -551,11 +542,7 @@ export class PaymentDialogComponent implements OnInit {
           // Débloquer le mois suivant
           const nextMonth = this.months.find(m => m.monthNumber === month.monthNumber + 1);
           if (nextMonth && !nextMonth.isPaid) {
-            const selectedYear = this.form.get('year')?.value;
-            const isFuture = (selectedYear === this.currentYear && nextMonth.monthNumber > this.currentMonth);
-            if (!isFuture) {
-              nextMonth.isDisabled = false;
-            }
+            nextMonth.isDisabled = false;
           }
         }
       }

@@ -22,13 +22,13 @@
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer mode="side" opened class="sidenav">
+  <mat-sidenav #drawer [mode]="isMobile ? 'over' : 'side'" [opened]="sidenavOpened" class="sidenav">
     <div class="sidebar-logo-container">
       <img src="assets/images/logo.svg" alt="Logo Syndicale" class="sidebar-logo">
     </div>
     <mat-nav-list>
       <!-- Home -->
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" (click)="onNavItemClick(drawer)">
         <mat-icon matListItemIcon>dashboard</mat-icon>
         <span matListItemTitle>Tableau de bord</span>
       </a>
@@ -39,38 +39,38 @@
           <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
           <span matListItemTitle>Administration</span>
         </mat-list-item>
-        
-        <a mat-list-item routerLink="/settings/buildings" routerLinkActive="active" class="submenu-item">
+
+        <a mat-list-item routerLink="/settings/buildings" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>apartment</mat-icon>
           <span matListItemTitle>Immeubles</span>
         </a>
-        
-        <a mat-list-item routerLink="/settings/apartments" routerLinkActive="active" class="submenu-item">
+
+        <a mat-list-item routerLink="/settings/apartments" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>meeting_room</mat-icon>
           <span matListItemTitle>Appartements</span>
         </a>
 
-        <a mat-list-item routerLink="/settings/members" routerLinkActive="active" class="submenu-item">
+        <a mat-list-item routerLink="/settings/members" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>people</mat-icon>
           <span matListItemTitle>Adhérents</span>
         </a>
 
-        <a mat-list-item routerLink="/settings/notes" routerLinkActive="active" class="submenu-item">
+        <a mat-list-item routerLink="/settings/notes" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>description</mat-icon>
           <span matListItemTitle>Notes</span>
         </a>
 
-        <a mat-list-item routerLink="/admin/suppliers" routerLinkActive="active" class="submenu-item">
+        <a mat-list-item routerLink="/admin/suppliers" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>store</mat-icon>
           <span matListItemTitle>Fournisseurs</span>
         </a>
 
-        <a mat-list-item routerLink="/admin/announcements" routerLinkActive="active" class="submenu-item">
+        <a mat-list-item routerLink="/admin/announcements" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>campaign</mat-icon>
           <span matListItemTitle>Annonces</span>
         </a>
 
-        <a mat-list-item routerLink="/admin/polls" routerLinkActive="active" class="submenu-item">
+        <a mat-list-item routerLink="/admin/polls" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>poll</mat-icon>
           <span matListItemTitle>Sondages</span>
         </a>
@@ -83,12 +83,12 @@
           <span matListItemTitle>Communauté</span>
         </mat-list-item>
 
-        <a mat-list-item routerLink="/portal/announcements" routerLinkActive="active" class="submenu-item">
+        <a mat-list-item routerLink="/portal/announcements" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>announcement</mat-icon>
           <span matListItemTitle>Annonces</span>
         </a>
 
-        <a mat-list-item routerLink="/portal/polls" routerLinkActive="active" class="submenu-item">
+        <a mat-list-item routerLink="/portal/polls" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>how_to_vote</mat-icon>
           <span matListItemTitle>Sondages</span>
         </a>
@@ -100,13 +100,13 @@
           <mat-icon matListItemIcon>local_parking</mat-icon>
           <span matListItemTitle>Parking</span>
         </mat-list-item>
-        
-        <a mat-list-item routerLink="/parking/cars" routerLinkActive="active" class="submenu-item">
+
+        <a mat-list-item routerLink="/parking/cars" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>directions_car</mat-icon>
           <span matListItemTitle>Voitures</span>
         </a>
 
-        <a mat-list-item routerLink="/parking/places" routerLinkActive="active" class="submenu-item">
+        <a mat-list-item routerLink="/parking/places" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>event_seat</mat-icon>
           <span matListItemTitle>Places</span>
         </a>
@@ -118,18 +118,18 @@
           <mat-icon matListItemIcon>attach_money</mat-icon>
           <span matListItemTitle>Finances</span>
         </mat-list-item>
-        
-        <a mat-list-item routerLink="/finances/revenues" routerLinkActive="active" class="submenu-item">
+
+        <a mat-list-item routerLink="/finances/revenues" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>trending_up</mat-icon>
           <span matListItemTitle>Revenus</span>
         </a>
-        
-        <a mat-list-item routerLink="/finances/expenses" routerLinkActive="active" class="submenu-item">
+
+        <a mat-list-item routerLink="/finances/expenses" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>receipt</mat-icon>
           <span matListItemTitle>Dépenses</span>
         </a>
-        
-        <a mat-list-item routerLink="/finances/reports" routerLinkActive="active" class="submenu-item">
+
+        <a mat-list-item routerLink="/finances/reports" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>assessment</mat-icon>
           <span matListItemTitle>Bilans</span>
         </a>

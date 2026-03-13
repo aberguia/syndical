@@ -35,6 +35,10 @@ mat-toolbar {
   padding: 24px;
   background-color: #f5f5f5;
   min-height: 100%;
+
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
 }
 
 .toolbar-logo {
@@ -56,6 +60,12 @@ mat-toolbar {
   font-size: 16px;
 }
 
+.user-name-label {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
 .residence-name {
   font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
   font-size: 20px;
@@ -66,6 +76,16 @@ mat-toolbar {
   padding: 6px 20px;
   border-left: 2px solid rgba(255, 255, 255, 0.4);
   border-right: 2px solid rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 4px 8px;
+    max-width: 140px;
+  }
 }
 
 .spacer {

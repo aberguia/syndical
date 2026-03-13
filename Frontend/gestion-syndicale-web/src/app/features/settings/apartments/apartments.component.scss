@@ -1,5 +1,9 @@
 .apartments-container {
   padding: 24px;
+
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
 }
 
 .header {
@@ -12,6 +16,20 @@
     margin: 0;
     font-size: 28px;
     color: #333;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    h1 {
+      font-size: 22px;
+    }
+
+    button {
+      width: 100%;
+    }
   }
 }
 
@@ -28,6 +46,18 @@
     flex: 1;
     max-width: 400px;
   }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0;
+
+    .filter-field,
+    .search-field {
+      min-width: unset;
+      max-width: unset;
+      width: 100%;
+    }
+  }
 }
 
 .loading {
@@ -40,7 +70,7 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .apartments-table {
@@ -51,6 +81,51 @@
   padding: 12px 16px !important;
   min-width: 250px;
   max-width: 300px;
+}
+
+// Tailles des colonnes
+.mat-column-buildingNumber {
+  width: 80px;
+  max-width: 80px;
+}
+
+.mat-column-apartmentNumber {
+  width: 90px;
+  max-width: 90px;
+}
+
+.mat-column-cotisations {
+  flex: 1;
+  min-width: 200px;
+}
+
+.mat-column-actions {
+  width: 130px;
+  min-width: 130px;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .mat-column-buildingNumber {
+    width: 60px;
+    max-width: 60px;
+    font-size: 13px;
+  }
+
+  .mat-column-apartmentNumber {
+    width: 70px;
+    max-width: 70px;
+    font-size: 13px;
+  }
+
+  .mat-column-cotisations {
+    min-width: 160px;
+  }
+
+  .mat-column-actions {
+    width: 110px;
+    min-width: 110px;
+  }
 }
 
 .active-chip {

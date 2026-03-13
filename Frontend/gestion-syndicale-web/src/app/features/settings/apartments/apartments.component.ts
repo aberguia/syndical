@@ -1,5 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Subscription } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -53,8 +55,10 @@ import { MemberService } from '../../../core/services/member.service';
   templateUrl: './apartments.component.html',
   styleUrls: ['./apartments.component.scss']
 })
-export class ApartmentsComponent implements OnInit {
-  displayedColumns: string[] = ['buildingNumber', 'apartmentNumber', 'floor', 'adherent', 'isActive', 'cotisations', 'actions'];
+export class ApartmentsComponent implements OnInit, OnDestroy {
+  private readonly COLUMNS_DESKTOP = ['buildingNumber', 'apartmentNumber', 'floor', 'adherent', 'isActive', 'cotisations', 'actions'];
+  private readonly COLUMNS_MOBILE = ['buildingNumber', 'apartmentNumber', 'cotisations', 'actions'];
+  displayedColumns: string[] = this.COLUMNS_DESKTOP;
   dataSource: MatTableDataSource<Apartment>;
   buildings: Building[] = [];
   buildingFilter = new FormControl(0);
@@ -64,6 +68,7 @@ export class ApartmentsComponent implements OnInit {
   currentYear: number;
   currentMonth: number;
   currentDay: number;
+  private breakpointSub!: Subscription;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -77,7 +82,8 @@ export class ApartmentsComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private breakpointObserver: BreakpointObserver
   ) {
     this.dataSource = new MatTableDataSource<Apartment>([]);
     this.isSuperAdminOrAdmin = this.authService.hasRole('SuperAdmin') || this.authService.hasRole('Admin');
@@ -88,7 +94,17 @@ export class ApartmentsComponent implements OnInit {
     this.currentDay = now.getDate();
   }
 
+  ngOnDestroy(): void {
+    this.breakpointSub?.unsubscribe();
+  }
+
   ngOnInit(): void {
+    this.breakpointSub = this.breakpointObserver
+      .observe([Breakpoints.Handset, Breakpoints.TabletPortrait])
+      .subscribe(result => {
+        this.displayedColumns = result.matches ? this.COLUMNS_MOBILE : this.COLUMNS_DESKTOP;
+      });
+
     this.loadBuildings();
     
     // Recharger les données à chaque retour sur la page
@@ -216,7 +232,7 @@ export class ApartmentsComponent implements OnInit {
     // Calcul des segments
     const greenMonths = paidMonthsCount;
     const redMonths = Math.max(0, dueMonthsCount - paidMonthsCount);
-    const blueMonths = 12 - dueMonthsCount;
+    const blueMonths = 12 - greenMonths - redMonths;
 
     return {
       greenMonths,

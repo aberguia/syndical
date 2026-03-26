@@ -39,7 +39,8 @@ public class CreateMonthlyPaymentDto
 public class ApartmentPaymentSummaryDto
 {
     public int ApartmentId { get; set; }
-    public int PaidMonthsCount { get; set; } // Nombre de mois payés dans l'année
+    public int PaidMonthsCount { get; set; }         // Mois payés dans l'année courante
+    public int PreviousYearsUnpaidCount { get; set; } // Mois impayés des années précédentes
 }
 
 /// <summary>

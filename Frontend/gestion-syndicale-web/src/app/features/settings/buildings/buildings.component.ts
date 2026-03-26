@@ -122,7 +122,7 @@ export class BuildingsComponent implements OnInit {
 
   calculateBuildingPaymentStatus(apartmentsCount: number, totalPaidMonths: number): PaymentStatusData {
     if (apartmentsCount === 0) {
-      return { greenMonths: 0, redMonths: 0, blueMonths: 12 };
+      return { greenMonths: 0, redMonths: 0, blueMonths: 12, previousYearsUnpaid: 0 };
     }
 
     // Capacité totale
@@ -152,9 +152,10 @@ export class BuildingsComponent implements OnInit {
     const blueMonths = (blueCapacity / totalCapacity) * 12;
 
     return {
-      greenMonths: Math.round(greenMonths * 10) / 10, // Arrondi à 1 décimale
+      greenMonths: Math.round(greenMonths * 10) / 10,
       redMonths: Math.round(redMonths * 10) / 10,
-      blueMonths: Math.round(blueMonths * 10) / 10
+      blueMonths: Math.round(blueMonths * 10) / 10,
+      previousYearsUnpaid: 0
     };
   }
 
@@ -162,7 +163,8 @@ export class BuildingsComponent implements OnInit {
     return this.paymentStatusMap.get(buildingId) || {
       greenMonths: 0,
       redMonths: 0,
-      blueMonths: 12
+      blueMonths: 12,
+      previousYearsUnpaid: 0
     };
   }
 

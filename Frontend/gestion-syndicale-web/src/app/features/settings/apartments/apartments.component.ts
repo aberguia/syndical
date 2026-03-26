@@ -207,13 +207,15 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
       next: (summary) => {
         // Créer une map pour accès rapide
         const summaryMap = new Map(
-          summary.apartments.map(a => [a.apartmentId, a.paidMonthsCount])
+          summary.apartments.map(a => [a.apartmentId, a])
         );
 
         // Calculer le statut pour chaque appartement
         apartments.forEach(apt => {
-          const paidMonthsCount = summaryMap.get(apt.id) || 0;
-          const statusData = this.calculatePaymentStatus(paidMonthsCount);
+          const aptSummary = summaryMap.get(apt.id);
+          const paidMonthsCount = aptSummary?.paidMonthsCount || 0;
+          const previousYearsUnpaid = aptSummary?.previousYearsUnpaidCount || 0;
+          const statusData = this.calculatePaymentStatus(paidMonthsCount, previousYearsUnpaid);
           this.paymentStatusMap.set(apt.id, statusData);
         });
       },
@@ -223,7 +225,7 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  calculatePaymentStatus(paidMonthsCount: number): PaymentStatusData {
+  calculatePaymentStatus(paidMonthsCount: number, previousYearsUnpaid: number = 0): PaymentStatusData {
     // Calcul des mois échus
     let dueMonthsCount = 0;
     if (this.currentDay > 15) {
@@ -241,7 +243,8 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
     return {
       greenMonths,
       redMonths,
-      blueMonths
+      blueMonths,
+      previousYearsUnpaid
     };
   }
 
@@ -249,7 +252,8 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
     return this.paymentStatusMap.get(apartmentId) || {
       greenMonths: 0,
       redMonths: 0,
-      blueMonths: 12
+      blueMonths: 12,
+      previousYearsUnpaid: 0
     };
   }
 

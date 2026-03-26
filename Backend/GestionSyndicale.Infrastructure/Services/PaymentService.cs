@@ -565,15 +565,68 @@ public class PaymentService : IPaymentService
     /// </summary>
     public async Task<PaymentsSummaryDto> GetPaymentsSummaryByYearAsync(int year)
     {
-        var summary = await _context.MonthlyPayments
+        // Mois payés dans l'année courante
+        var currentYearPaid = await _context.MonthlyPayments
             .Where(mp => mp.Year == year && mp.IsPaid)
             .GroupBy(mp => mp.ApartmentId)
-            .Select(g => new ApartmentPaymentSummaryDto
-            {
-                ApartmentId = g.Key,
-                PaidMonthsCount = g.Count()
-            })
+            .Select(g => new { ApartmentId = g.Key, PaidCount = g.Count() })
             .ToListAsync();
+
+        // Mois payés par appartement et par année pour les années précédentes
+        var previousYearsPaid = await _context.MonthlyPayments
+            .Where(mp => mp.Year < year && mp.IsPaid)
+            .GroupBy(mp => new { mp.ApartmentId, mp.Year })
+            .Select(g => new { g.Key.ApartmentId, g.Key.Year, PaidCount = g.Count() })
+            .ToListAsync();
+
+        // Année de départ de chaque appartement (premier enregistrement)
+        var apartmentMinYears = await _context.MonthlyPayments
+            .GroupBy(mp => mp.ApartmentId)
+            .Select(g => new { ApartmentId = g.Key, MinYear = g.Min(mp => mp.Year) })
+            .ToListAsync();
+
+        // Calcul des mois impayés des années précédentes par appartement
+        var previousYearsUnpaidMap = new Dictionary<int, int>();
+        foreach (var apt in apartmentMinYears)
+        {
+            if (apt.MinYear >= year) continue;
+
+            var paidByYear = previousYearsPaid
+                .Where(x => x.ApartmentId == apt.ApartmentId)
+                .ToDictionary(x => x.Year, x => x.PaidCount);
+
+            int totalUnpaid = 0;
+            for (int y = apt.MinYear; y < year; y++)
+            {
+                int paidInYear = paidByYear.TryGetValue(y, out var count) ? count : 0;
+                totalUnpaid += 12 - paidInYear;
+            }
+
+            previousYearsUnpaidMap[apt.ApartmentId] = totalUnpaid;
+        }
+
+        // Fusion des résultats
+        var allApartmentIds = apartmentMinYears.Select(x => x.ApartmentId).ToHashSet();
+        var currentYearMap = currentYearPaid.ToDictionary(x => x.ApartmentId, x => x.PaidCount);
+
+        var summary = allApartmentIds.Select(aptId => new ApartmentPaymentSummaryDto
+        {
+            ApartmentId = aptId,
+            PaidMonthsCount = currentYearMap.TryGetValue(aptId, out var paid) ? paid : 0,
+            PreviousYearsUnpaidCount = previousYearsUnpaidMap.TryGetValue(aptId, out var unpaid) ? unpaid : 0
+        }).ToList();
+
+        // Ajouter les appartements sans aucun record (0 partout)
+        var apartmentsWithRecords = allApartmentIds;
+        var currentYearOnly = currentYearPaid
+            .Where(x => !apartmentsWithRecords.Contains(x.ApartmentId))
+            .Select(x => new ApartmentPaymentSummaryDto
+            {
+                ApartmentId = x.ApartmentId,
+                PaidMonthsCount = x.PaidCount,
+                PreviousYearsUnpaidCount = 0
+            });
+        summary.AddRange(currentYearOnly);
 
         return new PaymentsSummaryDto
         {

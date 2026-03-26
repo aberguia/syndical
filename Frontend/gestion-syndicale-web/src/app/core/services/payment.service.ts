@@ -146,6 +146,7 @@ export interface PaymentsSummary {
 export interface ApartmentPaymentSummary {
   apartmentId: number;
   paidMonthsCount: number;
+  previousYearsUnpaidCount: number;
 }
 
 export interface BuildingsPaymentsSummary {

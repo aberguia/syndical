@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface PaymentStatusData {
-  greenMonths: number;  // Mois payés
-  redMonths: number;    // Mois échus non payés
-  blueMonths: number;   // Mois non échus (restants)
+  greenMonths: number;          // Mois payés
+  redMonths: number;            // Mois échus non payés (année courante)
+  blueMonths: number;           // Mois non échus (restants)
+  previousYearsUnpaid: number;  // Mois impayés des années précédentes
 }
 
 @Component({
@@ -46,6 +47,7 @@ export interface PaymentStatusData {
         </span>
         <span class="legend-item red-text" *ngIf="(displayMode === 'months' && data.redMonths > 0) || (displayMode === 'percentage' && redPercent > 0)">
           {{ displayMode === 'percentage' ? (redPercent | number:'1.1-1') + '% en retard' : data.redMonths + ' en retard' }}
+          <span *ngIf="displayMode === 'months' && data.previousYearsUnpaid > 0" class="prev-years-badge">(+{{ data.previousYearsUnpaid }})</span>
         </span>
         <span class="legend-item blue-text" *ngIf="(displayMode === 'months' && data.blueMonths > 0) || (displayMode === 'percentage' && bluePercent > 0)">
           {{ displayMode === 'percentage' ? (bluePercent | number:'1.1-1') + '% restants' : data.blueMonths + ' restants' }}
@@ -133,10 +135,18 @@ export interface PaymentStatusData {
 
     .red-text {
       color: #f44336;
-      
+
       &::before {
         background: #f44336;
       }
+    }
+
+    .prev-years-badge {
+      font-size: 10px;
+      font-weight: 600;
+      color: #b71c1c;
+      margin-left: 2px;
+      opacity: 0.85;
     }
 
     .blue-text {

@@ -10,9 +10,13 @@ import { ConfigService } from './app/core/services/config.service';
 import { firstValueFrom } from 'rxjs';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { LanguageService } from './app/core/services/language.service';
 
-export function initializeApp(configService: ConfigService) {
-  return () => firstValueFrom(configService.loadConfig());
+export function initializeApp(configService: ConfigService, languageService: LanguageService) {
+  return async () => {
+    await firstValueFrom(configService.loadConfig());
+    await languageService.initAsync();
+  };
 }
 
 bootstrapApplication(AppComponent, {
@@ -25,7 +29,7 @@ bootstrapApplication(AppComponent, {
     {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
-      deps: [ConfigService],
+      deps: [ConfigService, LanguageService],
       multi: true
     }
   ]

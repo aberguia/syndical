@@ -1,16 +1,14 @@
 <div class="revenues-container">
-  <!-- En-tête -->
   <div class="header">
-    <h2>Gestion des Revenus</h2>
+    <h2>{{ 'FINANCES.REVENUES_TITLE' | translate }}</h2>
   </div>
 
-  <!-- Bandeau Total Annuel Global -->
   <mat-card class="total-card" *ngIf="totals">
-    <h3>Total des revenus {{ totals.year }} : <strong>{{ totals.grandTotal | number:'1.2-2' }} DH</strong></h3>
+    <h3>{{ 'FINANCES.TOTAL_YEAR' | translate:{ year: totals.year } }} <strong>{{ totals.grandTotal | number:'1.2-2' }} {{ 'FINANCES.CURRENCY' | translate }}</strong></h3>
     <div class="breakdown">
-      <span>Cotisations: {{ totals.contributionsTotal | number:'1.2-2' }} DH</span>
+      <span>{{ 'FINANCES.CONTRIBUTIONS_BREAKDOWN' | translate }} {{ totals.contributionsTotal | number:'1.2-2' }} {{ 'FINANCES.CURRENCY' | translate }}</span>
       <span class="separator">•</span>
-      <span>Autres revenus: {{ totals.otherRevenuesTotal | number:'1.2-2' }} DH</span>
+      <span>{{ 'FINANCES.OTHER_BREAKDOWN' | translate }} {{ totals.otherRevenuesTotal | number:'1.2-2' }} {{ 'FINANCES.CURRENCY' | translate }}</span>
     </div>
   </mat-card>
 
@@ -18,14 +16,14 @@
   <mat-card class="section-card">
     <div class="section-header">
       <div>
-        <h3>Cotisations mensuelles {{ currentYear }}</h3>
+        <h3>{{ 'FINANCES.CONTRIBUTIONS_SECTION' | translate:{ year: currentYear } }}</h3>
         <p class="config-info" *ngIf="contributionsMatrix">
-          Montant cotisation mensuelle (config): {{ contributionsMatrix.monthlyContributionAmount | number:'1.2-2' }} DH
+          {{ 'FINANCES.CONTRIBUTION_AMOUNT' | translate }} {{ contributionsMatrix.monthlyContributionAmount | number:'1.2-2' }} {{ 'FINANCES.CURRENCY' | translate }}
         </p>
       </div>
       <button mat-raised-button color="primary" (click)="openAddContributionDialog()" *ngIf="isSuperAdmin">
         <mat-icon>add</mat-icon>
-        Ajouter une cotisation
+        {{ 'FINANCES.ADD_CONTRIBUTION' | translate }}
       </button>
     </div>
 
@@ -33,9 +31,9 @@
       <table class="contributions-matrix">
         <thead>
           <tr>
-            <th class="building-header">Immeuble</th>
+            <th class="building-header">{{ 'COMMON.BUILDING' | translate }}</th>
             <th *ngFor="let month of monthNames">{{ month }}</th>
-            <th class="total-header">Total</th>
+            <th class="total-header">{{ 'FINANCES.REPORT_TOTAL' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -47,7 +45,7 @@
             <td class="total-cell">{{ building.rowTotal | number:'1.0-0' }}</td>
           </tr>
           <tr class="totals-row">
-            <td class="building-cell"><strong>Total</strong></td>
+            <td class="building-cell"><strong>{{ 'FINANCES.REPORT_TOTAL' | translate }}</strong></td>
             <td *ngFor="let total of contributionsMatrix.monthlyTotals" class="total-cell">
               <strong>{{ total > 0 ? (total | number:'1.0-0') : '-' }}</strong>
             </td>
@@ -64,80 +62,78 @@
     </div>
 
     <div class="year-total" *ngIf="contributionsMatrix && !loading">
-      <strong>Total cotisations année {{ currentYear }}: {{ contributionsMatrix.yearTotal | number:'1.2-2' }} DH</strong>
+      <strong>{{ 'FINANCES.TOTAL_CONTRIBUTIONS' | translate:{ year: currentYear } }} {{ contributionsMatrix.yearTotal | number:'1.2-2' }} {{ 'FINANCES.CURRENCY' | translate }}</strong>
     </div>
   </mat-card>
 
   <!-- PARTIE 2: Autres Revenus (Table CRUD) -->
   <mat-card class="section-card">
     <div class="section-header">
-      <h3>Autres revenus</h3>
+      <h3>{{ 'FINANCES.OTHER_REVENUES_SECTION' | translate }}</h3>
       <button mat-raised-button color="primary" (click)="openAddOtherRevenueDialog()" *ngIf="isSuperAdmin">
         <mat-icon>add</mat-icon>
-        Ajouter un revenu
+        {{ 'FINANCES.ADD_REVENUE' | translate }}
       </button>
     </div>
 
-    <!-- Filtres -->
     <div class="filters-row">
       <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Rechercher</mat-label>
-        <input matInput [formControl]="searchControl" placeholder="Titre, description...">
+        <mat-label>{{ 'COMMON.SEARCH' | translate }}</mat-label>
+        <input matInput [formControl]="searchControl" [placeholder]="'FINANCES.SEARCH_REVENUES' | translate">
         <mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
     </div>
 
-    <!-- Table -->
     <div class="table-container" *ngIf="!loading">
       <table mat-table [dataSource]="otherRevenues" class="revenues-table">
-        
+
         <ng-container matColumnDef="revenueDate">
-          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.REPORT_DATE' | translate }}</th>
           <td mat-cell *matCellDef="let revenue">{{ revenue.revenueDate | date:'dd/MM/yyyy' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef>Titre</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.TITLE' | translate }}</th>
           <td mat-cell *matCellDef="let revenue">{{ revenue.title }}</td>
         </ng-container>
 
         <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef>Montant</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.AMOUNT' | translate }}</th>
           <td mat-cell *matCellDef="let revenue" class="amount-cell">
-            {{ revenue.amount | number:'1.2-2' }} DH
+            {{ revenue.amount | number:'1.2-2' }} {{ 'FINANCES.CURRENCY' | translate }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.DESCRIPTION' | translate }}</th>
           <td mat-cell *matCellDef="let revenue">
             <span class="description-text">{{ revenue.description || '-' }}</span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="attachmentsCount">
-          <th mat-header-cell *matHeaderCellDef>Pièces</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.PIECES' | translate }}</th>
           <td mat-cell *matCellDef="let revenue">
-            <button mat-icon-button 
-                    (click)="openAttachmentsDialog(revenue)" 
-                    [matBadge]="revenue.attachmentsCount" 
+            <button mat-icon-button
+                    (click)="openAttachmentsDialog(revenue)"
+                    [matBadge]="revenue.attachmentsCount"
                     [matBadgeHidden]="!revenue.attachmentsCount || revenue.attachmentsCount === 0"
                     matBadgeColor="primary"
-                    matTooltip="Gérer les pièces jointes">
+                    [matTooltip]="'FINANCES.TOOLTIP_ATTACHMENTS' | translate">
               <mat-icon>attachment</mat-icon>
             </button>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
           <td mat-cell *matCellDef="let revenue" class="actions-cell">
-            <button mat-icon-button (click)="openEditOtherRevenueDialog(revenue)" 
-                    matTooltip="Modifier" color="primary" *ngIf="isSuperAdmin">
+            <button mat-icon-button (click)="openEditOtherRevenueDialog(revenue)"
+                    [matTooltip]="'COMMON.EDIT' | translate" color="primary" *ngIf="isSuperAdmin">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button (click)="deleteOtherRevenue(revenue)" 
-                    matTooltip="Supprimer" color="warn" *ngIf="isSuperAdmin">
+            <button mat-icon-button (click)="deleteOtherRevenue(revenue)"
+                    [matTooltip]="'COMMON.DELETE' | translate" color="warn" *ngIf="isSuperAdmin">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
@@ -148,7 +144,7 @@
       </table>
 
       <div class="no-data" *ngIf="otherRevenues.length === 0">
-        <p>Aucun autre revenu enregistré pour l'année {{ currentYear }}</p>
+        <p>{{ 'FINANCES.NOT_FOUND_REVENUES' | translate:{ year: currentYear } }}</p>
       </div>
     </div>
 
@@ -156,7 +152,6 @@
       <mat-spinner diameter="40"></mat-spinner>
     </div>
 
-    <!-- Pagination -->
     <mat-paginator *ngIf="!loading"
                    [length]="totalOtherRevenuesCount"
                    [pageSize]="pageSize"
@@ -167,7 +162,7 @@
     </mat-paginator>
 
     <div class="year-total" *ngIf="!loading">
-      <strong>Total autres revenus année {{ currentYear }}: {{ totalOtherRevenuesAmount | number:'1.2-2' }} DH</strong>
+      <strong>{{ 'FINANCES.TOTAL_OTHER_REVENUES' | translate:{ year: currentYear } }} {{ totalOtherRevenuesAmount | number:'1.2-2' }} {{ 'FINANCES.CURRENCY' | translate }}</strong>
     </div>
   </mat-card>
 </div>

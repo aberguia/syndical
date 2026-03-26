@@ -13,6 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ParkingStatus } from '../../../core/models/parking.models';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../../../environments/environment';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-parking-places',
@@ -26,7 +27,8 @@ import { environment } from '../../../../environments/environment';
     MatInputModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ],
   templateUrl: './parking-places.component.html',
   styleUrls: ['./parking-places.component.scss']

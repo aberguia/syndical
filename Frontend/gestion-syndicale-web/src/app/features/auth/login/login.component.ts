@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfigService } from '../../../core/services/config.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ import { ConfigService } from '../../../core/services/config.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslateModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']

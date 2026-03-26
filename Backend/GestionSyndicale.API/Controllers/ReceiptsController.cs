@@ -34,7 +34,7 @@ public class ReceiptsController : ControllerBase
 
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
             
-            var pdfBytes = await _pdfService.GenerateApartmentReceiptAsync(apartmentId, request.Years, userId);
+            var pdfBytes = await _pdfService.GenerateApartmentReceiptAsync(apartmentId, request.Years, userId, request.Lang);
             
             if (pdfBytes == null || pdfBytes.Length == 0)
             {
@@ -57,4 +57,5 @@ public class ReceiptsController : ControllerBase
 public class GenerateReceiptRequest
 {
     public List<int> Years { get; set; } = new();
+    public string Lang { get; set; } = "fr";
 }

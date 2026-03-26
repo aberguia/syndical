@@ -4,19 +4,19 @@
       <img src="assets/images/logo.svg" alt="Logo Syndicale" class="validate-otp-logo">
     </div>
     <div class="validate-otp-header">
-      <h1>Validation du compte</h1>
-      <p>Entrez le code à 6 chiffres envoyé à <strong>{{ email }}</strong></p>
+      <h1>{{ 'AUTH.OTP_VALIDATION_TITLE' | translate }}</h1>
+      <p>{{ 'AUTH.OTP_SENT_TO' | translate }} <strong>{{ email }}</strong></p>
     </div>
 
     <form [formGroup]="otpForm" (ngSubmit)="onSubmit()" class="validate-otp-form">
       <mat-form-field appearance="outline">
-        <mat-label>Code OTP</mat-label>
-        <input matInput formControlName="otpCode" placeholder="123456" maxlength="6">
+        <mat-label>{{ 'AUTH.OTP_CODE' | translate }}</mat-label>
+        <input matInput formControlName="otpCode" [placeholder]="'AUTH.OTP_PLACEHOLDER' | translate" maxlength="6">
         <mat-error *ngIf="otpForm.get('otpCode')?.hasError('required')">
-          Le code est requis
+          {{ 'AUTH.OTP_CODE_REQUIRED' | translate }}
         </mat-error>
         <mat-error *ngIf="otpForm.get('otpCode')?.hasError('pattern')">
-          Le code doit contenir 6 chiffres
+          {{ 'AUTH.OTP_CODE_DIGITS' | translate }}
         </mat-error>
       </mat-form-field>
 
@@ -29,17 +29,17 @@
       </div>
 
       <button mat-raised-button color="primary" type="submit" [disabled]="loading || otpForm.invalid">
-        <span *ngIf="!loading">Valider</span>
+        <span *ngIf="!loading">{{ 'AUTH.OTP_BTN' | translate }}</span>
         <mat-spinner *ngIf="loading" diameter="20" style="display: inline-block; margin: 0 auto;"></mat-spinner>
       </button>
 
       <button mat-button type="button" (click)="resendOtp()" [disabled]="loading" class="resend-button">
-        Renvoyer le code
+        {{ 'AUTH.RESEND_CODE' | translate }}
       </button>
     </form>
 
     <div class="form-footer">
-      <a routerLink="/auth/login">Retour à la connexion</a>
+      <a routerLink="/auth/login">{{ 'AUTH.BACK_TO_LOGIN' | translate }}</a>
     </div>
   </mat-card>
 </div>

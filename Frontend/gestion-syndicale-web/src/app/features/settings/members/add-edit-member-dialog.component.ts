@@ -52,11 +52,8 @@ import { Apartment, Building } from '../../../core/models/settings.models';
         </div>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email *</mat-label>
+          <mat-label>Email</mat-label>
           <input matInput type="email" formControlName="email" placeholder="jean.dupont@example.com" [readonly]="isReadOnly">
-          <mat-error *ngIf="form.get('email')?.hasError('required')">
-            L'email est requis
-          </mat-error>
           <mat-error *ngIf="form.get('email')?.hasError('email')">
             L'email n'est pas valide
           </mat-error>
@@ -64,7 +61,8 @@ import { Apartment, Building } from '../../../core/models/settings.models';
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Téléphone *</mat-label>
-          <input matInput formControlName="phoneNumber" placeholder="0612345678" [readonly]="isReadOnly">
+          <input matInput formControlName="phoneNumber" placeholder="0612345678 ; 0698765432" [readonly]="isReadOnly">
+          <mat-hint>Plusieurs numéros séparés par " ; "</mat-hint>
           <mat-error *ngIf="form.get('phoneNumber')?.hasError('required')">
             Le téléphone est requis
           </mat-error>
@@ -173,7 +171,7 @@ export class AddEditMemberDialogComponent implements OnInit {
     this.form = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.email]],
       phoneNumber: ['', [Validators.required]],
       role: ['Adherent', [Validators.required]],
       buildingId: [null],

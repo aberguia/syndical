@@ -53,14 +53,10 @@ public class ApartmentsController : ControllerBase
                     IsActive = a.IsActive,
                     CreatedAt = a.CreatedAt,
                     UpdatedAt = a.UpdatedAt,
-                    MemberFullName = _context.Users
-                        .Where(u => u.ApartmentId == a.Id && !u.IsDeleted && u.IsActive)
-                        .Select(u => u.FirstName + " " + u.LastName)
-                        .FirstOrDefault(),
-                    MemberId = _context.Users
-                        .Where(u => u.ApartmentId == a.Id && !u.IsDeleted && u.IsActive)
-                        .Select(u => u.Id)
-                        .FirstOrDefault()
+                    Residents = _context.Users
+                        .Where(u => u.ApartmentId == a.Id && !u.IsDeleted)
+                        .Select(u => new ApartmentResidentDto { Id = u.Id, FullName = u.FirstName + " " + u.LastName })
+                        .ToList()
                 })
                 .ToListAsync();
 
@@ -281,7 +277,7 @@ public class ApartmentsController : ControllerBase
         try
         {
             var apartment = await _context.Apartments
-                .Include(a => a.PrimaryOwner)
+                .Include(a => a.Residents)
                 .Include(a => a.Payments)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
@@ -291,12 +287,12 @@ public class ApartmentsController : ControllerBase
             }
 
             // Vérifier qu'il n'y a pas d'utilisateur associé
-            if (apartment.PrimaryOwner != null)
+            if (apartment.Residents.Any())
             {
-                return BadRequest(new 
-                { 
-                    message = "Impossible de supprimer cet appartement car un copropriétaire y est associé",
-                    ownerEmail = apartment.PrimaryOwner.Email
+                return BadRequest(new
+                {
+                    message = "Impossible de supprimer cet appartement car des adhérents y sont associés",
+                    residentsCount = apartment.Residents.Count
                 });
             }
 
@@ -333,7 +329,7 @@ public class ApartmentsController : ControllerBase
         try
         {
             var apartment = await _context.Apartments
-                .Include(a => a.PrimaryOwner)
+                .Include(a => a.Residents)
                 .FirstOrDefaultAsync(a => a.Id == id && !a.IsDeleted);
 
             if (apartment == null)
@@ -341,15 +337,16 @@ public class ApartmentsController : ControllerBase
                 return NotFound(new { message = "Appartement introuvable" });
             }
 
-            var memberName = apartment.PrimaryOwner != null
-                ? $"{apartment.PrimaryOwner.FirstName} {apartment.PrimaryOwner.LastName}"
+            var firstResident = apartment.Residents.FirstOrDefault();
+            var memberName = firstResident != null
+                ? $"{firstResident.FirstName} {firstResident.LastName}"
                 : null;
 
             return Ok(new ApartmentMemberNameDto
             {
                 ApartmentId = id,
                 MemberName = memberName,
-                HasMember = apartment.PrimaryOwner != null
+                HasMember = apartment.Residents.Any()
             });
         }
         catch (Exception ex)

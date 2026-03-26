@@ -1,9 +1,9 @@
 <div class="expenses-container">
   <div class="header">
-    <h2>Gestion des Dépenses</h2>
+    <h2>{{ 'FINANCES.EXPENSES_TITLE' | translate }}</h2>
     <button mat-raised-button color="primary" (click)="openAddDialog()">
       <mat-icon>add</mat-icon>
-      Ajouter une Dépense
+      {{ 'FINANCES.ADD_EXPENSE' | translate }}
     </button>
   </div>
 
@@ -12,22 +12,22 @@
     <mat-card-content>
       <div class="filters-row">
         <mat-form-field appearance="outline">
-          <mat-label>Année *</mat-label>
+          <mat-label>{{ 'FINANCES.FILTER_YEAR' | translate }} *</mat-label>
           <mat-select [formControl]="yearControl">
             <mat-option *ngFor="let year of years" [value]="year">{{year}}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Mois</mat-label>
+          <mat-label>{{ 'FINANCES.FILTER_MONTH' | translate }}</mat-label>
           <mat-select [formControl]="monthControl">
             <mat-option *ngFor="let month of months" [value]="month.value">{{month.label}}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Rechercher</mat-label>
-          <input matInput [formControl]="searchControl" placeholder="Description, fournisseur, référence">
+          <mat-label>{{ 'COMMON.SEARCH' | translate }}</mat-label>
+          <input matInput [formControl]="searchControl" [placeholder]="'FINANCES.SEARCH_PLACEHOLDER' | translate">
           <mat-icon matPrefix>search</mat-icon>
         </mat-form-field>
       </div>
@@ -36,8 +36,8 @@
 
   <!-- Total -->
   <mat-card class="total-card">
-    <h3>Total: <strong>{{totalAmount | number:'1.2-2'}} DH</strong></h3>
-    <span class="count">{{totalCount}} dépense(s)</span>
+    <h3>Total: <strong>{{totalAmount | number:'1.2-2'}} {{ 'FINANCES.CURRENCY' | translate }}</strong></h3>
+    <span class="count">{{totalCount}} {{ 'FINANCES.EXPENSES_COUNT' | translate }}</span>
   </mat-card>
 
   <!-- Table -->
@@ -49,65 +49,65 @@
 
       <div *ngIf="!loading">
         <table mat-table [dataSource]="dataSource" class="expenses-table">
-          
+
           <ng-container matColumnDef="expenseDate">
-            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.REPORT_DATE' | translate }}</th>
             <td mat-cell *matCellDef="let expense">{{expense.expenseDate | date:'dd/MM/yyyy'}}</td>
           </ng-container>
 
           <ng-container matColumnDef="categoryName">
-            <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.CATEGORY' | translate }}</th>
             <td mat-cell *matCellDef="let expense">
               <mat-chip class="category-chip">{{expense.categoryName}}</mat-chip>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="amount">
-            <th mat-header-cell *matHeaderCellDef>Montant</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.AMOUNT' | translate }}</th>
             <td mat-cell *matCellDef="let expense" class="amount-cell">
-              {{expense.amount | number:'1.2-2'}} DH
+              {{expense.amount | number:'1.2-2'}} {{ 'FINANCES.CURRENCY' | translate }}
             </td>
           </ng-container>
 
           <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.DESCRIPTION' | translate }}</th>
             <td mat-cell *matCellDef="let expense" [matTooltip]="expense.description">
               {{getTruncatedDescription(expense.description)}}
             </td>
           </ng-container>
 
           <ng-container matColumnDef="invoiceNumber">
-            <th mat-header-cell *matHeaderCellDef>Référence</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.REFERENCE' | translate }}</th>
             <td mat-cell *matCellDef="let expense">{{expense.invoiceNumber || '-'}}</td>
           </ng-container>
 
           <ng-container matColumnDef="supplierName">
-            <th mat-header-cell *matHeaderCellDef>Fournisseur</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.FIELD_SUPPLIER' | translate }}</th>
             <td mat-cell *matCellDef="let expense">{{expense.supplierName || '-'}}</td>
           </ng-container>
 
           <ng-container matColumnDef="attachmentsCount">
-            <th mat-header-cell *matHeaderCellDef>Pièces</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.PIECES' | translate }}</th>
             <td mat-cell *matCellDef="let expense">
-              <button mat-icon-button 
-                      (click)="openAttachmentsDialog(expense)" 
-                      [matBadge]="expense.attachmentsCount" 
+              <button mat-icon-button
+                      (click)="openAttachmentsDialog(expense)"
+                      [matBadge]="expense.attachmentsCount"
                       [matBadgeHidden]="!expense.attachmentsCount || expense.attachmentsCount === 0"
                       matBadgeColor="primary"
-                      matTooltip="Gérer les pièces jointes">
+                      [matTooltip]="'FINANCES.TOOLTIP_ATTACHMENTS' | translate">
                 <mat-icon>attachment</mat-icon>
               </button>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
             <td mat-cell *matCellDef="let expense" class="actions-cell">
-              <button mat-icon-button (click)="openEditDialog(expense)" matTooltip="Modifier" color="primary">
+              <button mat-icon-button (click)="openEditDialog(expense)" [matTooltip]="'COMMON.EDIT' | translate" color="primary">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button *ngIf="isSuperAdmin" mat-icon-button (click)="deleteExpense(expense)" 
-                      matTooltip="Supprimer" color="warn">
+              <button *ngIf="isSuperAdmin" mat-icon-button (click)="deleteExpense(expense)"
+                      [matTooltip]="'COMMON.DELETE' | translate" color="warn">
                 <mat-icon>delete</mat-icon>
               </button>
             </td>
@@ -116,15 +116,14 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-          <!-- No data row -->
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-              Aucune dépense trouvée
+              {{ 'FINANCES.NOT_FOUND_EXPENSES' | translate }}
             </td>
           </tr>
         </table>
 
-        <mat-paginator 
+        <mat-paginator
           [length]="totalCount"
           [pageSize]="pageSize"
           [pageSizeOptions]="[10, 25, 50, 100]"

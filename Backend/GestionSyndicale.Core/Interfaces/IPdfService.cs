@@ -11,6 +11,6 @@ public interface IPdfService
     Task<byte[]> GenerateMonthlyReportAsync(int year, int month);
     Task<byte[]> GenerateAnnualReportAsync(int year);
     Task<byte[]> GenerateApartmentBalanceStatementAsync(int apartmentId);
-    Task<byte[]> GenerateApartmentReceiptAsync(int apartmentId, List<int> years, int userId);
+    Task<byte[]> GenerateApartmentReceiptAsync(int apartmentId, List<int> years, int userId, string lang = "fr");
     Task<byte[]> GenerateBuildingPaymentsGridAsync(Building building, List<int> years);
 }

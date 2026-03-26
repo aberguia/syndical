@@ -21,6 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApartmentService } from '../../../core/services/apartment.service';
 import { BuildingService } from '../../../core/services/building.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { PaymentService } from '../../../core/services/payment.service';
 import { Apartment, Building } from '../../../core/models/settings.models';
 import { ApartmentDialogComponent } from './apartment-dialog.component';
@@ -30,6 +31,7 @@ import { PaymentStatusBarComponent, PaymentStatusData } from './payment-status-b
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
 import { AddEditMemberDialogComponent } from '../members/add-edit-member-dialog.component';
 import { MemberService } from '../../../core/services/member.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-apartments',
@@ -50,7 +52,8 @@ import { MemberService } from '../../../core/services/member.service';
     MatProgressSpinnerModule,
     MatChipsModule,
     MatTooltipModule,
-    PaymentStatusBarComponent
+    PaymentStatusBarComponent,
+    TranslateModule
   ],
   templateUrl: './apartments.component.html',
   styleUrls: ['./apartments.component.scss']
@@ -79,6 +82,7 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private paymentService: PaymentService,
     private memberService: MemberService,
+    private languageService: LanguageService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
@@ -257,6 +261,7 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
   openAddDialog(): void {
     const dialogRef = this.dialog.open(ApartmentDialogComponent, {
       width: '600px',
+      direction: this.languageService.isRtl() ? 'rtl' : 'ltr',
       data: { apartment: null, buildings: this.buildings }
     });
 
@@ -270,6 +275,7 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
   openEditDialog(apartment: Apartment): void {
     const dialogRef = this.dialog.open(ApartmentDialogComponent, {
       width: '600px',
+      direction: this.languageService.isRtl() ? 'rtl' : 'ltr',
       data: { apartment, buildings: this.buildings }
     });
 
@@ -283,6 +289,7 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
   deleteApartment(apartment: Apartment): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
+      direction: this.languageService.isRtl() ? 'rtl' : 'ltr',
       data: {
         title: 'Confirmer la suppression',
         message: `Êtes-vous sûr de vouloir supprimer l'appartement ${apartment.apartmentNumber} ?`
@@ -309,6 +316,7 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
   openPaymentDialog(apartment: Apartment): void {
     const dialogRef = this.dialog.open(PaymentDialogComponent, {
       width: '700px',
+      direction: this.languageService.isRtl() ? 'rtl' : 'ltr',
       data: { apartment }
     });
 
@@ -326,6 +334,7 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
       next: (response: any) => {
         const dialogRef = this.dialog.open(GenerateReceiptDialogComponent, {
           width: '500px',
+          direction: this.languageService.isRtl() ? 'rtl' : 'ltr',
           data: {
             apartment,
             memberName: response.memberName
@@ -345,17 +354,14 @@ export class ApartmentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  viewMemberDetails(apartment: Apartment): void {
-    if (!apartment.memberId) {
-      return;
-    }
-    
+  viewMemberDetails(memberId: number): void {
     // Charger les détails du membre
-    this.memberService.getById(apartment.memberId).subscribe({
+    this.memberService.getById(memberId).subscribe({
       next: (member) => {
         // Ouvrir le dialog en mode lecture seule
         const dialogRef = this.dialog.open(AddEditMemberDialogComponent, {
           width: '600px',
+          direction: this.languageService.isRtl() ? 'rtl' : 'ltr',
           data: { ...member, readOnly: true },
           disableClose: false
         });

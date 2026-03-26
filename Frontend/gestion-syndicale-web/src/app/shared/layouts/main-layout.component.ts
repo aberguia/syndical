@@ -7,10 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { ConfigService } from '../../core/services/config.service';
+import { LanguageService, AppLanguage } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -23,7 +26,9 @@ import { ConfigService } from '../../core/services/config.service';
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTooltipModule,
+    TranslateModule
   ],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.scss']
@@ -36,14 +41,20 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   sidenavOpened = true;
   private breakpointSub!: Subscription;
 
+  get currentLang(): AppLanguage {
+    return this.languageService.getCurrentLang();
+  }
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private configService: ConfigService,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    public languageService: LanguageService
   ) {}
 
   ngOnInit(): void {
+    this.languageService.init();
     this.isSuperAdmin = this.authService.hasRole('SuperAdmin');
     this.residenceName = this.configService.getResidenceName();
 

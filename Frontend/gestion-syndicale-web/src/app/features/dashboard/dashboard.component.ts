@@ -9,11 +9,12 @@ import { DashboardService } from '../../core/services/dashboard.service';
 import { AdminDashboard, AdherentDashboard } from '../../core/models/community.models';
 import { AuthService } from '../../core/services/auth.service';
 import { BuildingRankingWidgetComponent } from '../../shared/components/building-ranking-widget.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, BuildingRankingWidgetComponent],
+  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, BuildingRankingWidgetComponent, TranslateModule],
   template: `
     <div class="dashboard-container">
       <div *ngIf="loading" class="loading"><mat-spinner></mat-spinner></div>
@@ -22,7 +23,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
       <div *ngIf="!loading && isAdmin && adminData" class="admin-dashboard">
         <h2 class="dashboard-title">
           <mat-icon>dashboard</mat-icon>
-          Tableau de bord
+          {{ 'DASHBOARD.TITLE' | translate }}
         </h2>
         
         <div class="kpis-grid">
@@ -33,7 +34,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
               </div>
               <div class="kpi-content">
                 <div class="kpi-value">{{adminData.kpis.buildingsCount}}</div>
-                <div class="kpi-label">Immeubles</div>
+                <div class="kpi-label">{{ 'DASHBOARD.BUILDINGS_COUNT' | translate }}</div>
               </div>
             </mat-card-content>
           </mat-card>
@@ -45,7 +46,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
               </div>
               <div class="kpi-content">
                 <div class="kpi-value">{{adminData.kpis.apartmentsCount}}</div>
-                <div class="kpi-label">Appartements</div>
+                <div class="kpi-label">{{ 'DASHBOARD.APARTMENTS_COUNT' | translate }}</div>
               </div>
             </mat-card-content>
           </mat-card>
@@ -57,7 +58,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
               </div>
               <div class="kpi-content">
                 <div class="kpi-value">{{adminData.kpis.adherentsCount}}</div>
-                <div class="kpi-label">Adhérents</div>
+                <div class="kpi-label">{{ 'DASHBOARD.MEMBERS_COUNT' | translate }}</div>
               </div>
             </mat-card-content>
           </mat-card>
@@ -69,7 +70,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
               </div>
               <div class="kpi-content">
                 <div class="kpi-value">{{formatAmountShort(adminData.kpis.totalRevenuesCurrentYear)}}</div>
-                <div class="kpi-label">Revenus {{currentYear}}</div>
+                <div class="kpi-label">{{ 'DASHBOARD.REVENUES_YEAR' | translate:{year: currentYear} }}</div>
               </div>
             </mat-card-content>
           </mat-card>
@@ -81,7 +82,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
               </div>
               <div class="kpi-content">
                 <div class="kpi-value">{{formatAmountShort(adminData.kpis.totalExpensesCurrentYear)}}</div>
-                <div class="kpi-label">Dépenses {{currentYear}}</div>
+                <div class="kpi-label">{{ 'DASHBOARD.EXPENSES_YEAR' | translate:{year: currentYear} }}</div>
               </div>
             </mat-card-content>
           </mat-card>
@@ -93,13 +94,13 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
               <div mat-card-avatar class="section-avatar announcements-avatar">
                 <mat-icon>campaign</mat-icon>
               </div>
-              <mat-card-title>Annonces récentes</mat-card-title>
-              <mat-card-subtitle>Dernières publications</mat-card-subtitle>
+              <mat-card-title>{{ 'DASHBOARD.RECENT_ANNOUNCEMENTS' | translate }}</mat-card-title>
+              <mat-card-subtitle>{{ 'DASHBOARD.LAST_PUBLICATIONS' | translate }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
               <div *ngIf="adminData.recentAnnouncements.length === 0" class="empty-state">
                 <mat-icon>info</mat-icon>
-                <p>Aucune annonce récente</p>
+                <p>{{ 'DASHBOARD.NO_RECENT_ANNOUNCEMENTS' | translate }}</p>
               </div>
               <div *ngFor="let a of adminData.recentAnnouncements" class="list-item">
                 <mat-icon class="item-icon">article</mat-icon>
@@ -115,7 +116,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
             <mat-card-actions>
               <button mat-button color="primary" routerLink="/admin/announcements">
                 <mat-icon>arrow_forward</mat-icon>
-                Voir tout
+                {{ 'COMMON.SEE_ALL' | translate }}
               </button>
             </mat-card-actions>
           </mat-card>
@@ -125,13 +126,13 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
               <div mat-card-avatar class="section-avatar polls-avatar">
                 <mat-icon>poll</mat-icon>
               </div>
-              <mat-card-title>Sondages récents</mat-card-title>
-              <mat-card-subtitle>Votes en cours</mat-card-subtitle>
+              <mat-card-title>{{ 'DASHBOARD.RECENT_POLLS' | translate }}</mat-card-title>
+              <mat-card-subtitle>{{ 'DASHBOARD.ONGOING_VOTES' | translate }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
               <div *ngIf="adminData.recentPolls.length === 0" class="empty-state">
                 <mat-icon>info</mat-icon>
-                <p>Aucun sondage récent</p>
+                <p>{{ 'DASHBOARD.NO_RECENT_POLLS' | translate }}</p>
               </div>
               <div *ngFor="let p of adminData.recentPolls" class="list-item">
                 <mat-icon class="item-icon">how_to_vote</mat-icon>
@@ -150,7 +151,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
             <mat-card-actions>
               <button mat-button color="primary" routerLink="/admin/polls">
                 <mat-icon>arrow_forward</mat-icon>
-                Voir tout
+                {{ 'COMMON.SEE_ALL' | translate }}
               </button>
             </mat-card-actions>
           </mat-card>
@@ -161,8 +162,8 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
             <div mat-card-avatar class="section-avatar parking-avatar">
               <mat-icon>local_parking</mat-icon>
             </div>
-            <mat-card-title>Parking Live</mat-card-title>
-            <mat-card-subtitle>État en temps réel</mat-card-subtitle>
+            <mat-card-title>{{ 'DASHBOARD.PARKING_LIVE' | translate }}</mat-card-title>
+            <mat-card-subtitle>{{ 'DASHBOARD.REALTIME' | translate }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <div class="parking-content-admin">
@@ -177,7 +178,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
                   </svg>
                   <div class="parking-number">
                     <div class="number">{{adminData.parkingLive.availablePlaces}}</div>
-                    <div class="label">disponibles</div>
+                    <div class="label">{{ 'DASHBOARD.AVAILABLE' | translate }}</div>
                   </div>
                 </div>
               </div>
@@ -186,21 +187,21 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
                   <mat-icon>directions_car</mat-icon>
                   <div class="stat-info">
                     <div class="stat-value">{{adminData.parkingLive.occupiedPlaces}}</div>
-                    <div class="stat-label">Places occupées</div>
+                    <div class="stat-label">{{ 'DASHBOARD.OCCUPIED_PLACES' | translate }}</div>
                   </div>
                 </div>
                 <div class="parking-stat">
                   <mat-icon>local_parking</mat-icon>
                   <div class="stat-info">
                     <div class="stat-value">{{adminData.parkingLive.totalPlaces}}</div>
-                    <div class="stat-label">Total des places</div>
+                    <div class="stat-label">{{ 'DASHBOARD.TOTAL_PLACES' | translate }}</div>
                   </div>
                 </div>
                 <div class="parking-stat">
                   <mat-icon>insights</mat-icon>
                   <div class="stat-info">
                     <div class="stat-value">{{getOccupancyRate(adminData.parkingLive)}}%</div>
-                    <div class="stat-label">Taux d'occupation</div>
+                    <div class="stat-label">{{ 'DASHBOARD.OCCUPANCY_RATE' | translate }}</div>
                   </div>
                 </div>
               </div>
@@ -211,7 +212,7 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
 
       <!-- Adherent Dashboard -->
       <div *ngIf="!loading && !isAdmin && adherentData" class="adherent-dashboard">
-        <h2>Mon tableau de bord</h2>
+        <h2>{{ 'DASHBOARD.MY_TITLE' | translate }}</h2>
         
         <mat-card class="message-card" [ngClass]="adherentData.contribution.isUpToDate ? 'success' : 'warning'">
           <mat-card-content><h3>{{adherentData.message}}</h3></mat-card-content>
@@ -219,25 +220,25 @@ import { BuildingRankingWidgetComponent } from '../../shared/components/building
 
         <div class="top-cards-grid">
           <mat-card class="contribution-card">
-            <mat-card-header><mat-card-title>Mes cotisations</mat-card-title></mat-card-header>
+            <mat-card-header><mat-card-title>{{ 'DASHBOARD.MY_CONTRIBUTIONS' | translate }}</mat-card-title></mat-card-header>
             <mat-card-content>
               <p>Appartement {{adherentData.contribution.apartmentNumber}} - Immeuble {{adherentData.contribution.buildingNumber}}</p>
-              <div class="contrib-row"><span>Montant annuel:</span><span>{{formatAmount(adherentData.contribution.annualAmount)}}</span></div>
-              <div class="contrib-row"><span>Payé:</span><span class="paid">{{formatAmount(adherentData.contribution.paidAmount)}}</span></div>
-              <div class="contrib-row"><span>Reste:</span><span [class.warning]="!adherentData.contribution.isUpToDate">{{formatAmount(adherentData.contribution.remainingAmount)}}</span></div>
+              <div class="contrib-row"><span>{{ 'DASHBOARD.ANNUAL_AMOUNT' | translate }}</span><span>{{formatAmount(adherentData.contribution.annualAmount)}}</span></div>
+              <div class="contrib-row"><span>{{ 'DASHBOARD.PAID' | translate }}</span><span class="paid">{{formatAmount(adherentData.contribution.paidAmount)}}</span></div>
+              <div class="contrib-row"><span>{{ 'DASHBOARD.REMAINING' | translate }}</span><span [class.warning]="!adherentData.contribution.isUpToDate">{{formatAmount(adherentData.contribution.remainingAmount)}}</span></div>
               <div class="status-badge" [ngClass]="adherentData.contribution.isUpToDate ? 'uptodate' : 'late'">{{adherentData.contribution.status}}</div>
             </mat-card-content>
           </mat-card>
 
           <mat-card class="parking-card">
-            <mat-card-header><mat-card-title>Parking Live</mat-card-title></mat-card-header>
+            <mat-card-header><mat-card-title>{{ 'DASHBOARD.PARKING_LIVE' | translate }}</mat-card-title></mat-card-header>
             <mat-card-content>
               <div class="parking-content">
                 <mat-icon class="parking-icon">local_parking</mat-icon>
                 <div class="parking-info">
                   <div class="parking-stats">{{adherentData.parkingLive.availablePlaces}}</div>
-                  <div class="parking-label">places disponibles</div>
-                  <div class="parking-total">sur {{adherentData.parkingLive.totalPlaces}} places</div>
+                  <div class="parking-label">{{ 'DASHBOARD.AVAILABLE_PLACES' | translate }}</div>
+                  <div class="parking-total">{{ 'DASHBOARD.OUT_OF' | translate:{total: adherentData.parkingLive.totalPlaces} }}</div>
                 </div>
               </div>
             </mat-card-content>

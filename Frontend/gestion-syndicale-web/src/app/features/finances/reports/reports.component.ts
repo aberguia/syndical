@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReportsService } from '../../../core/services/reports.service';
 import { FinancialSummary } from '../../../core/models/reports.models';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-reports',
@@ -29,7 +30,8 @@ import { FinancialSummary } from '../../../core/models/reports.models';
     MatNativeDateModule,
     MatTableModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss'

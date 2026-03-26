@@ -9,8 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PaymentService } from '../../../core/services/payment.service';
-import { MonthCheckbox, MONTHS_FR, CreatePaymentDto, ApartmentPaymentStatus } from '../../../core/models/payment.models';
+import { MonthCheckbox, CreatePaymentDto, CancelMonthlyPaymentDto, ApartmentPaymentStatus } from '../../../core/models/payment.models';
 import { Apartment } from '../../../core/models/settings.models';
 
 @Component({
@@ -26,19 +27,20 @@ import { Apartment } from '../../../core/models/settings.models';
     MatIconModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ],
   template: `
     <h2 mat-dialog-title>
       <mat-icon class="dialog-icon">payments</mat-icon>
-      <span *ngIf="data.apartment">Ajouter un paiement – Appartement {{ data.apartment.apartmentNumber }} - {{ data.apartment.buildingNumber }}</span>
-      <span *ngIf="!data.apartment">Ajouter une cotisation mensuelle</span>
+      <span *ngIf="data.apartment">{{ 'PAYMENT.DIALOG_TITLE' | translate: { number: data.apartment.apartmentNumber, building: data.apartment.buildingNumber } }}</span>
+      <span *ngIf="!data.apartment">{{ 'PAYMENT.DIALOG_TITLE_REVENUE' | translate }}</span>
     </h2>
-    
+
     <mat-dialog-content>
       <form [formGroup]="form">
         <mat-form-field appearance="outline" class="full-width" *ngIf="data.mode === 'fromRevenues'">
-          <mat-label>Immeuble *</mat-label>
+          <mat-label>{{ 'PAYMENT.FIELD_BUILDING' | translate }}</mat-label>
           <mat-select formControlName="buildingId" (selectionChange)="onBuildingChange()">
             <mat-option *ngFor="let building of buildings" [value]="building.id">
               {{ building.buildingNumber }} - {{ building.address }}
@@ -47,16 +49,16 @@ import { Apartment } from '../../../core/models/settings.models';
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width" *ngIf="data.mode === 'fromRevenues'">
-          <mat-label>Appartement *</mat-label>
+          <mat-label>{{ 'PAYMENT.FIELD_APARTMENT' | translate }}</mat-label>
           <mat-select formControlName="apartmentId" [disabled]="!form.get('buildingId')?.value">
             <mat-option *ngFor="let apt of filteredApartments" [value]="apt.id">
-              Appartement {{ apt.apartmentNumber }}
+              {{ 'COMMON.APARTMENT' | translate }} {{ apt.apartmentNumber }}
             </mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Année *</mat-label>
+          <mat-label>{{ 'PAYMENT.FIELD_YEAR' | translate }}</mat-label>
           <mat-select formControlName="year" (selectionChange)="onYearChange()">
             <mat-option *ngFor="let year of availableYears" [value]="year">
               {{ year }}
@@ -66,7 +68,7 @@ import { Apartment } from '../../../core/models/settings.models';
 
         <div *ngIf="loadingMonths" class="loading-container">
           <mat-spinner diameter="40"></mat-spinner>
-          <p>Chargement des mois payés...</p>
+          <p>{{ 'PAYMENT.LOADING_MONTHS' | translate }}</p>
         </div>
 
         <div *ngIf="!loadingMonths && months.length > 0">
@@ -77,46 +79,50 @@ import { Apartment } from '../../../core/models/settings.models';
               [disabled]="!canSelectAllMonths"
               (change)="onSelectAllToggle($event.checked)"
               class="select-all-checkbox">
-              <strong>Sélectionner toute l'année</strong>
+              <strong>{{ 'PAYMENT.SELECT_ALL' | translate }}</strong>
             </mat-checkbox>
           </div>
 
           <div class="months-grid">
             <div *ngFor="let month of months" class="month-item">
               <mat-checkbox
-                [checked]="month.isSelected || month.isPaid"
-                [disabled]="month.isDisabled || month.isPaid"
+                [checked]="(month.isPaid && !month.markedForRemoval) || month.isSelected"
                 (change)="onMonthToggle(month, $event.checked)"
-                [class.paid-month]="month.isPaid"
-                [class.disabled-month]="month.isDisabled && !month.isPaid">
+                [class.paid-month]="month.isPaid && !month.markedForRemoval"
+                [class.removal-month]="month.markedForRemoval"
+                [style.opacity]="month.isDisabled ? '0.4' : '1'">
                 {{ month.monthName }}
-                <span *ngIf="month.isPaid" class="paid-badge">Payé</span>
+                <span *ngIf="month.isPaid && !month.markedForRemoval" class="paid-badge">{{ 'PAYMENT.PAID_BADGE' | translate }}</span>
+                <span *ngIf="month.markedForRemoval" class="removal-badge">{{ 'PAYMENT.REMOVAL_BADGE' | translate }}</span>
               </mat-checkbox>
+              <div *ngIf="month.isDisabled" class="month-overlay"></div>
             </div>
           </div>
         </div>
 
-        <div *ngIf="!loadingMonths && paymentStatusMessage" class="info-message">
+        <div *ngIf="!loadingMonths && paymentStatusMessage && monthsToAddCount === 0 && monthsToRemoveCount === 0" class="info-message">
           <mat-icon>info</mat-icon>
           <span>{{ paymentStatusMessage }}</span>
         </div>
 
-        <div *ngIf="!loadingMonths && selectedMonthsCount > 0" class="summary">
+        <div *ngIf="!loadingMonths && (monthsToAddCount > 0 || monthsToRemoveCount > 0)" class="summary">
           <mat-icon>info</mat-icon>
-          <span>{{ selectedMonthsCount }} mois sélectionné(s) pour le paiement</span>
+          <span *ngIf="monthsToAddCount > 0">{{ 'PAYMENT.MONTHS_SELECTED' | translate: { count: monthsToAddCount } }}</span>
+          <span *ngIf="monthsToAddCount > 0 && monthsToRemoveCount > 0"> — </span>
+          <span *ngIf="monthsToRemoveCount > 0">{{ 'PAYMENT.MONTHS_TO_REMOVE' | translate: { count: monthsToRemoveCount } }}</span>
         </div>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()" [disabled]="saving">Annuler</button>
-      <button 
-        mat-raised-button 
-        color="primary" 
-        (click)="onSave()" 
-        [disabled]="form.invalid || saving || selectedMonthsCount === 0">
+      <button mat-button (click)="onCancel()" [disabled]="saving">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSave()"
+        [disabled]="form.invalid || saving || (monthsToAddCount === 0 && monthsToRemoveCount === 0)">
         <mat-icon>save</mat-icon>
-        {{ saving ? 'Enregistrement...' : 'Enregistrer le paiement' }}
+        {{ (saving ? 'PAYMENT.SAVING' : 'PAYMENT.SAVE') | translate }}
       </button>
     </mat-dialog-actions>
   `,
@@ -178,21 +184,18 @@ import { Apartment } from '../../../core/models/settings.models';
     }
 
     .month-item {
+      position: relative;
+
       mat-checkbox {
         width: 100%;
       }
-      
-      &.paid-month {
-        mat-checkbox {
-          opacity: 0.7;
-        }
-      }
     }
 
-    .disabled-month {
-      mat-checkbox {
-        opacity: 0.5;
-      }
+    .month-overlay {
+      position: absolute;
+      inset: 0;
+      cursor: not-allowed;
+      z-index: 1;
     }
 
     .paid-badge {
@@ -201,6 +204,16 @@ import { Apartment } from '../../../core/models/settings.models';
       font-weight: 500;
       margin-left: 4px;
       background: #e8f5e9;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .removal-badge {
+      font-size: 11px;
+      color: #f44336;
+      font-weight: 500;
+      margin-left: 4px;
+      background: #ffebee;
       padding: 2px 6px;
       border-radius: 4px;
     }
@@ -281,27 +294,36 @@ export class PaymentDialogComponent implements OnInit {
   allApartments: Apartment[] = [];
   filteredApartments: Apartment[] = [];
 
+  get monthsToAddCount(): number {
+    return this.months.filter(m => m.isSelected && !m.isPaid).length;
+  }
+
+  get monthsToRemoveCount(): number {
+    return this.months.filter(m => m.isPaid && m.markedForRemoval).length;
+  }
+
   get allMonthsSelected(): boolean {
-    const selectableMonths = this.months.filter(m => !m.isDisabled && !m.isPaid);
-    if (selectableMonths.length === 0) return false;
-    return selectableMonths.every(m => m.isSelected);
+    const unpaid = this.months.filter(m => !m.isPaid);
+    if (unpaid.length === 0) return false;
+    return unpaid.every(m => m.isSelected);
   }
 
   get someMonthsSelected(): boolean {
-    const selectableMonths = this.months.filter(m => !m.isDisabled && !m.isPaid);
-    if (selectableMonths.length === 0) return false;
-    const selectedCount = selectableMonths.filter(m => m.isSelected).length;
-    return selectedCount > 0 && selectedCount < selectableMonths.length;
+    const unpaid = this.months.filter(m => !m.isPaid);
+    if (unpaid.length === 0) return false;
+    const count = unpaid.filter(m => m.isSelected).length;
+    return count > 0 && count < unpaid.length;
   }
 
   get canSelectAllMonths(): boolean {
-    return this.months.some(m => !m.isDisabled && !m.isPaid);
+    return this.months.some(m => !m.isPaid);
   }
 
   constructor(
     private fb: FormBuilder,
     private paymentService: PaymentService,
     private snackBar: MatSnackBar,
+    private translate: TranslateService,
     public dialogRef: MatDialogRef<PaymentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { apartment?: Apartment; mode?: string }
   ) {
@@ -369,18 +391,18 @@ export class PaymentDialogComponent implements OnInit {
     const selectedYear = this.form.get('year')?.value;
 
     if (this.paymentStatus.firstUnpaidYear && this.paymentStatus.firstUnpaidMonth) {
-      const monthName = MONTHS_FR[this.paymentStatus.firstUnpaidMonth - 1];
-      
+      const monthName = this.translate.instant('MONTHS.' + this.paymentStatus.firstUnpaidMonth);
+
       if (selectedYear === this.paymentStatus.firstUnpaidYear) {
-        this.paymentStatusMessage = `Premier mois impayé : ${monthName} ${this.paymentStatus.firstUnpaidYear}. Vous devez payer dans l'ordre chronologique.`;
+        this.paymentStatusMessage = this.translate.instant('PAYMENT.FIRST_UNPAID', { month: monthName, year: this.paymentStatus.firstUnpaidYear });
       } else if (selectedYear > this.paymentStatus.firstUnpaidYear) {
-        this.paymentStatusMessage = `Vous devez d'abord payer les mois de l'année ${this.paymentStatus.firstUnpaidYear} (à partir de ${monthName}).`;
+        this.paymentStatusMessage = this.translate.instant('PAYMENT.PAY_FIRST', { year: this.paymentStatus.firstUnpaidYear, month: monthName });
       } else {
         this.paymentStatusMessage = '';
       }
     } else if (this.paymentStatus.lastPaidYear && this.paymentStatus.lastPaidMonth) {
-      const lastMonthName = MONTHS_FR[this.paymentStatus.lastPaidMonth - 1];
-      this.paymentStatusMessage = `Tous les paiements sont à jour jusqu'à ${lastMonthName} ${this.paymentStatus.lastPaidYear}.`;
+      const lastMonthName = this.translate.instant('MONTHS.' + this.paymentStatus.lastPaidMonth);
+      this.paymentStatusMessage = this.translate.instant('PAYMENT.UP_TO_DATE', { month: lastMonthName, year: this.paymentStatus.lastPaidYear });
     }
   }
 
@@ -397,7 +419,7 @@ export class PaymentDialogComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading buildings:', error);
-        this.snackBar.open('Erreur lors du chargement des immeubles', 'Fermer', { duration: 3000 });
+        this.snackBar.open(this.translate.instant('COMMON.ERROR_LOADING'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
       }
     });
 
@@ -455,139 +477,105 @@ export class PaymentDialogComponent implements OnInit {
   }
 
   buildMonthsArray(year: number, paidMonths: number[]): void {
-    // Vérifier si cette année est l'année du premier impayé
-    const isFirstUnpaidYear = this.paymentStatus?.firstUnpaidYear === year;
-    const firstUnpaidMonth = this.paymentStatus?.firstUnpaidMonth || 1;
-
+    const months: MonthCheckbox[] = [];
     for (let i = 1; i <= 12; i++) {
-      const isPaid = paidMonths.includes(i);
-
-      let isDisabled = false;
-
-      if (isPaid) {
-        // Mois déjà payé : désactivé
-        isDisabled = true;
-      } else if (!isFirstUnpaidYear) {
-        // Année différente du premier impayé : tout désactivé
-        isDisabled = true;
-      } else if (i < firstUnpaidMonth) {
-        // Mois avant le premier impayé dans la bonne année : désactivé (ne devrait pas arriver)
-        isDisabled = true;
-      } else if (i > firstUnpaidMonth) {
-        // Mois après le premier impayé : désactivé jusqu'à ce que les précédents soient cochés
-        isDisabled = !this.areAllPreviousMonthsChecked(i, paidMonths);
-      }
-      // Si i === firstUnpaidMonth : enabled (premier mois à payer)
-      
-      this.months.push({
+      months.push({
         monthNumber: i,
-        monthName: MONTHS_FR[i - 1],
-        isPaid: isPaid,
-        isDisabled: isDisabled,
-        isSelected: false
+        monthName: this.translate.instant('MONTHS.' + i),
+        isPaid: paidMonths.includes(i),
+        isDisabled: false,
+        isSelected: false,
+        markedForRemoval: false
       });
     }
-  }
-
-  /**
-   * Vérifie si tous les mois avant le mois donné sont payés ou cochés
-   */
-  areAllPreviousMonthsChecked(month: number, paidMonths: number[]): boolean {
-    const firstUnpaidMonth = this.paymentStatus?.firstUnpaidMonth || 1;
-    
-    for (let i = firstUnpaidMonth; i < month; i++) {
-      const monthData = this.months.find(m => m.monthNumber === i);
-      const isPaid = paidMonths.includes(i);
-      const isSelected = monthData?.isSelected || false;
-      
-      if (!isPaid && !isSelected) {
-        return false; // Il y a un mois non payé et non coché avant
-      }
-    }
-    return true;
+    this.months = this.rebuildDisabledState(months);
   }
 
   onMonthToggle(month: MonthCheckbox, checked: boolean): void {
-    if (!month.isPaid && !month.isDisabled) {
-      month.isSelected = checked;
-      
-      // Débloquer le mois suivant si on coche
-      if (checked) {
-        const nextMonthIndex = this.months.findIndex(m => m.monthNumber === month.monthNumber + 1);
-        if (nextMonthIndex !== -1) {
-          const nextMonth = this.months[nextMonthIndex];
-          if (!nextMonth.isPaid) {
-            nextMonth.isDisabled = false;
-          }
+    if (month.isDisabled) return;
+
+    let updated: MonthCheckbox[];
+
+    if (checked) {
+      updated = this.months.map(m => {
+        if (m.monthNumber !== month.monthNumber) return m;
+        if (m.isPaid && m.markedForRemoval) return { ...m, markedForRemoval: false };
+        if (!m.isPaid) return { ...m, isSelected: true };
+        return m;
+      });
+    } else {
+      updated = this.months.map(m => {
+        if (m.monthNumber === month.monthNumber) {
+          return m.isPaid ? { ...m, markedForRemoval: true } : { ...m, isSelected: false };
         }
-      } else {
-        // Bloquer les mois suivants si on décoche
-        for (let i = month.monthNumber + 1; i <= 12; i++) {
-          const laterMonth = this.months.find(m => m.monthNumber === i);
-          if (laterMonth && !laterMonth.isPaid) {
-            laterMonth.isDisabled = true;
-            laterMonth.isSelected = false;
-          }
+        if (m.monthNumber > month.monthNumber) {
+          if (m.isPaid && !m.markedForRemoval) return { ...m, markedForRemoval: true };
+          if (m.isSelected) return { ...m, isSelected: false };
         }
-      }
+        return m;
+      });
     }
+
+    this.months = this.rebuildDisabledState(updated);
   }
 
   onSelectAllToggle(checked: boolean): void {
     if (checked) {
-      // Sélectionner tous les mois disponibles en respectant l'ordre chronologique
-      for (const month of this.months) {
-        if (!month.isPaid && !month.isDisabled) {
-          month.isSelected = true;
-          // Débloquer le mois suivant
-          const nextMonth = this.months.find(m => m.monthNumber === month.monthNumber + 1);
-          if (nextMonth && !nextMonth.isPaid) {
-            nextMonth.isDisabled = false;
-          }
-        }
-      }
+      const updated = this.months.map(m =>
+        !m.isPaid ? { ...m, isSelected: true } : m
+      );
+      this.months = this.rebuildDisabledState(updated);
     } else {
-      // Désélectionner tous les mois sélectionnables
-      const firstUnpaidMonth = this.paymentStatus?.firstUnpaidMonth || 1;
-      for (const month of this.months) {
-        if (!month.isPaid) {
-          month.isSelected = false;
-          // Réactiver les règles de verrouillage
-          if (month.monthNumber > firstUnpaidMonth) {
-            month.isDisabled = true;
-          }
-        }
-      }
-      // Le premier mois impayé reste débloqué
-      const firstMonth = this.months.find(m => m.monthNumber === firstUnpaidMonth);
-      if (firstMonth && !firstMonth.isPaid) {
-        firstMonth.isDisabled = false;
-      }
+      const updated = this.months.map(m =>
+        !m.isPaid ? { ...m, isSelected: false } : m
+      );
+      this.months = this.rebuildDisabledState(updated);
     }
+  }
+
+  private rebuildDisabledState(months: MonthCheckbox[]): MonthCheckbox[] {
+    // Mois "actifs" = payés (non annulés) OU sélectionnés
+    const isActive = (m: MonthCheckbox) =>
+      (m.isPaid && !m.markedForRemoval) || m.isSelected;
+
+    const lastActiveNumber = months
+      .filter(isActive)
+      .reduce((max, m) => Math.max(max, m.monthNumber), 0);
+
+    // Prochain mois non actif après le dernier actif
+    const nextToCheck = months.find(
+      m => !isActive(m) && m.monthNumber > lastActiveNumber
+    )?.monthNumber ?? -1;
+
+    return months.map(m => {
+      if (isActive(m)) {
+        // Seul le dernier actif est cliquable (pour décocher)
+        return { ...m, isDisabled: m.monthNumber !== lastActiveNumber };
+      } else {
+        // Seul le prochain en séquence est cliquable (pour cocher)
+        return { ...m, isDisabled: m.monthNumber !== nextToCheck };
+      }
+    });
   }
 
   onSave(): void {
     if (this.form.invalid) return;
 
-    const selectedMonths = this.months
-      .filter(m => m.isSelected && !m.isPaid)
-      .map(m => m.monthNumber);
+    const monthsToAdd = this.months.filter(m => m.isSelected && !m.isPaid).map(m => m.monthNumber);
+    const monthsToRemove = this.months.filter(m => m.isPaid && m.markedForRemoval).map(m => m.monthNumber);
 
-    if (selectedMonths.length === 0) {
-      this.snackBar.open('Veuillez sélectionner au moins un mois', 'Fermer', { 
-        duration: 3000 
-      });
+    if (monthsToAdd.length === 0 && monthsToRemove.length === 0) {
+      this.snackBar.open(this.translate.instant('PAYMENT.NO_MONTH_SELECTED'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
       return;
     }
 
-    // Get apartment ID from either data.apartment or form
     let apartmentId: number;
     if (this.data.apartment) {
       apartmentId = this.data.apartment.id;
     } else if (this.data.mode === 'fromRevenues') {
       apartmentId = this.form.get('apartmentId')?.value;
       if (!apartmentId) {
-        this.snackBar.open('Veuillez sélectionner un appartement', 'Fermer', { duration: 3000 });
+        this.snackBar.open(this.translate.instant('PAYMENT.NO_APARTMENT'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
         return;
       }
     } else {
@@ -595,34 +583,42 @@ export class PaymentDialogComponent implements OnInit {
     }
 
     this.saving = true;
+    const year = this.form.get('year')?.value;
 
-    const dto: CreatePaymentDto = {
-      apartmentId: apartmentId,
-      year: this.form.get('year')?.value,
-      months: selectedMonths
+    const addObs = monthsToAdd.length > 0
+      ? this.paymentService.createMonthlyPayment({ apartmentId, year, months: monthsToAdd })
+      : null;
+
+    const removeObs = monthsToRemove.length > 0
+      ? this.paymentService.cancelMonthlyPayments({ apartmentId, year, months: monthsToRemove })
+      : null;
+
+    const finish = () => {
+      this.snackBar.open(
+        this.translate.instant('PAYMENT.SAVE_SUCCESS', { count: monthsToAdd.length + monthsToRemove.length }),
+        this.translate.instant('COMMON.CLOSE'),
+        { duration: 3000 }
+      );
+      this.dialogRef.close(true);
     };
 
-    this.paymentService.createMonthlyPayment(dto).subscribe({
-      next: () => {
-        this.snackBar.open(
-          `Paiement enregistré avec succès pour ${selectedMonths.length} mois`,
-          'Fermer',
-          { duration: 3000 }
-        );
-        this.dialogRef.close(true);
-      },
-      error: (error) => {
-        console.error('Error saving payment:', error);
-        let message = 'Erreur lors de l\'enregistrement du paiement';
-        
-        if (error.error?.message) {
-          message = error.error.message;
-        }
-        
-        this.snackBar.open(message, 'Fermer', { duration: 5000 });
-        this.saving = false;
-      }
-    });
+    const handleError = (error: any) => {
+      console.error('Error saving payment:', error);
+      this.snackBar.open(
+        error.error?.message || this.translate.instant('PAYMENT.SAVE_ERROR'),
+        this.translate.instant('COMMON.CLOSE'),
+        { duration: 5000 }
+      );
+      this.saving = false;
+    };
+
+    if (addObs && removeObs) {
+      addObs.subscribe({ next: () => removeObs.subscribe({ next: finish, error: handleError }), error: handleError });
+    } else if (addObs) {
+      addObs.subscribe({ next: finish, error: handleError });
+    } else if (removeObs) {
+      removeObs.subscribe({ next: finish, error: handleError });
+    }
   }
 
   onCancel(): void {

@@ -33,9 +33,8 @@ public class CreateMemberDto
     [Required(ErrorMessage = "Le nom est obligatoire")]
     public string LastName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "L'email est obligatoire")]
     [EmailAddress(ErrorMessage = "Format d'email invalide")]
-    public string Email { get; set; } = string.Empty;
+    public string? Email { get; set; }
 
     [Required(ErrorMessage = "Le téléphone est obligatoire")]
     public string PhoneNumber { get; set; } = string.Empty;
@@ -57,9 +56,8 @@ public class UpdateMemberDto
     [Required(ErrorMessage = "Le nom est obligatoire")]
     public string LastName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "L'email est obligatoire")]
     [EmailAddress(ErrorMessage = "Format d'email invalide")]
-    public string Email { get; set; } = string.Empty;
+    public string? Email { get; set; }
 
     [Required(ErrorMessage = "Le téléphone est obligatoire")]
     public string PhoneNumber { get; set; } = string.Empty;

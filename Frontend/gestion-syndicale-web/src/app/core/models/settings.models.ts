@@ -19,6 +19,11 @@ export interface BuildingDto {
   isActive: boolean;
 }
 
+export interface ApartmentResident {
+  id: number;
+  fullName: string;
+}
+
 export interface Apartment {
   id: number;
   buildingId: number;
@@ -30,8 +35,7 @@ export interface Apartment {
   sharesCount: number;
   isActive: boolean;
   createdAt: Date;
-  memberFullName?: string;
-  memberId?: number;
+  residents: ApartmentResident[];
 }
 
 export interface ApartmentDto {

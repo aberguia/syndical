@@ -22,6 +22,8 @@ import { AddEditCarDialogComponent } from './add-edit-car-dialog.component';
 import { AddEditMemberDialogComponent } from '../../settings/members/add-edit-member-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-parking-cars',
@@ -40,7 +42,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
     MatDialogModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatTooltipModule,
+    TranslateModule
   ],
   templateUrl: './parking-cars.component.html',
   styleUrls: ['./parking-cars.component.scss']

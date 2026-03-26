@@ -19,7 +19,7 @@ public class Apartment
 
     // Navigation
     public Building Building { get; set; } = null!;
-    public User? PrimaryOwner { get; set; } // Un seul propriétaire principal
+    public ICollection<User> Residents { get; set; } = new List<User>(); // Plusieurs adhérents possibles
     public ICollection<ApartmentComment> Comments { get; set; } = new List<ApartmentComment>();
     public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

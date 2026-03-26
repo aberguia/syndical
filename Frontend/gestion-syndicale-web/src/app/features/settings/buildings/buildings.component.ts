@@ -20,6 +20,7 @@ import { BuildingDialogComponent } from './building-dialog.component';
 import { BuildingPaymentsReportDialogComponent } from './building-payments-report-dialog.component';
 import { PaymentStatusBarComponent, PaymentStatusData } from '../apartments/payment-status-bar.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-buildings',
@@ -38,7 +39,8 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatProgressSpinnerModule,
     MatChipsModule,
     MatTooltipModule,
-    PaymentStatusBarComponent
+    PaymentStatusBarComponent,
+    TranslateModule
   ],
   templateUrl: './buildings.component.html',
   styleUrls: ['./buildings.component.scss']

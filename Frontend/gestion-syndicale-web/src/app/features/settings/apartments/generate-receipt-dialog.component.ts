@@ -8,9 +8,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apartment } from '../../../core/models/settings.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { LanguageService } from '../../../core/services/language.service';
 
 export interface ReceiptDialogData {
   apartment: Apartment;
@@ -29,51 +31,52 @@ export interface ReceiptDialogData {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ],
   template: `
     <h2 mat-dialog-title>
       <mat-icon class="dialog-icon">receipt_long</mat-icon>
-      Générer un reçu - Appartement {{ data.apartment.buildingNumber }} / {{ data.apartment.apartmentNumber }}
+      {{ 'RECEIPT.DIALOG_TITLE' | translate: { building: data.apartment.buildingNumber, number: data.apartment.apartmentNumber } }}
     </h2>
-    
+
     <mat-dialog-content>
       <div *ngIf="!data.memberName" class="error-message">
         <mat-icon>warning</mat-icon>
-        <p>Aucun adhérent associé à cet appartement, impossible de générer un reçu.</p>
+        <p>{{ 'RECEIPT.NO_MEMBER' | translate }}</p>
       </div>
 
       <div *ngIf="data.memberName" class="apartment-info">
-        <p><strong>Adhérent :</strong> {{ data.memberName }}</p>
-        <p><strong>Immeuble :</strong> {{ data.apartment.buildingNumber }} - {{ data.apartment.buildingName }}</p>
-        <p><strong>Appartement :</strong> {{ data.apartment.apartmentNumber }}</p>
+        <p><strong>{{ 'RECEIPT.LABEL_MEMBER' | translate }}</strong> {{ data.memberName }}</p>
+        <p><strong>{{ 'RECEIPT.LABEL_BUILDING' | translate }}</strong> {{ data.apartment.buildingNumber }} - {{ data.apartment.buildingName }}</p>
+        <p><strong>{{ 'RECEIPT.LABEL_APARTMENT' | translate }}</strong> {{ data.apartment.apartmentNumber }}</p>
       </div>
 
       <mat-form-field *ngIf="data.memberName" appearance="outline" class="full-width">
-        <mat-label>Années *</mat-label>
+        <mat-label>{{ 'RECEIPT.FIELD_YEARS' | translate }}</mat-label>
         <mat-select [formControl]="yearsControl" multiple>
           <mat-option *ngFor="let year of availableYears" [value]="year">
             {{ year }}
           </mat-option>
         </mat-select>
-        <mat-hint>Sélectionnez une ou plusieurs années</mat-hint>
+        <mat-hint>{{ 'RECEIPT.YEARS_HINT' | translate }}</mat-hint>
       </mat-form-field>
 
       <div *ngIf="generating" class="loading-container">
         <mat-spinner diameter="40"></mat-spinner>
-        <p>Génération du reçu en cours...</p>
+        <p>{{ 'RECEIPT.GENERATING' | translate }}</p>
       </div>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()" [disabled]="generating">Annuler</button>
-      <button 
-        mat-raised-button 
-        color="primary" 
+      <button mat-button (click)="onCancel()" [disabled]="generating">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button
+        mat-raised-button
+        color="primary"
         (click)="onGenerate()"
         [disabled]="!data.memberName || yearsControl.invalid || generating">
         <mat-icon>download</mat-icon>
-        Générer PDF
+        {{ 'RECEIPT.GENERATE_BTN' | translate }}
       </button>
     </mat-dialog-actions>
   `,
@@ -160,7 +163,9 @@ export class GenerateReceiptDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<GenerateReceiptDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ReceiptDialogData,
     private http: HttpClient,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private languageService: LanguageService,
+    private translate: TranslateService
   ) {
     this.yearsControl = new FormControl([], [Validators.required, Validators.minLength(1)]);
   }
@@ -193,10 +198,11 @@ export class GenerateReceiptDialogComponent implements OnInit {
     this.generating = true;
     const years = this.yearsControl.value as number[];
     const apartmentId = this.data.apartment.id;
+    const lang = this.languageService.getCurrentLang();
 
     this.http.post(
       `${environment.apiUrl}/receipts/apartment/${apartmentId}`,
-      { years },
+      { years, lang },
       { responseType: 'blob', observe: 'response' }
     ).subscribe({
       next: (response) => {
@@ -222,14 +228,14 @@ export class GenerateReceiptDialogComponent implements OnInit {
           link.click();
           window.URL.revokeObjectURL(url);
 
-          this.snackBar.open('Reçu généré avec succès', 'Fermer', { duration: 3000 });
+          this.snackBar.open(this.translate.instant('RECEIPT.GENERATE_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
           this.dialogRef.close(true);
         }
       },
       error: (error) => {
         this.generating = false;
         console.error('Error generating receipt:', error);
-        this.snackBar.open('Impossible de générer le reçu', 'Fermer', { duration: 5000 });
+        this.snackBar.open(this.translate.instant('RECEIPT.GENERATE_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 5000 });
       }
     });
   }

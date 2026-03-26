@@ -1,30 +1,30 @@
 <div class="members-container">
   <div class="header">
-    <h1>Gestion des Adhérents</h1>
-    <button 
-      *ngIf="isSuperAdmin" 
-      mat-raised-button 
-      color="primary" 
+    <h1>{{ 'MEMBERS.TITLE' | translate }}</h1>
+    <button
+      *ngIf="isSuperAdmin"
+      mat-raised-button
+      color="primary"
       (click)="openAddDialog()">
       <mat-icon>person_add</mat-icon>
-      Ajouter un adhérent
+      {{ 'MEMBERS.ADD' | translate }}
     </button>
   </div>
 
   <div class="filters">
     <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Rechercher</mat-label>
-      <input matInput [formControl]="searchControl" placeholder="Nom, prénom, email...">
+      <mat-label>{{ 'COMMON.SEARCH' | translate }}</mat-label>
+      <input matInput [formControl]="searchControl" [placeholder]="'MEMBERS.SEARCH_PLACEHOLDER' | translate">
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Filtrer par rôle</mat-label>
+      <mat-label>{{ 'MEMBERS.FILTER_ROLE' | translate }}</mat-label>
       <mat-select [formControl]="roleFilter">
-        <mat-option value="">Tous les rôles</mat-option>
-        <mat-option value="SuperAdmin">Super Admin</mat-option>
-        <mat-option value="Admin">Administrateur</mat-option>
-        <mat-option value="User">Adhérent</mat-option>
+        <mat-option value="">{{ 'MEMBERS.ALL_ROLES' | translate }}</mat-option>
+        <mat-option value="SuperAdmin">{{ 'MEMBERS.ROLE_SUPER_ADMIN' | translate }}</mat-option>
+        <mat-option value="Admin">{{ 'MEMBERS.ROLE_ADMIN' | translate }}</mat-option>
+        <mat-option value="User">{{ 'MEMBERS.ROLE_USER' | translate }}</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
@@ -35,9 +35,9 @@
 
   <div *ngIf="!loading" class="table-container">
     <table mat-table [dataSource]="dataSource" matSort class="members-table">
-      
+
       <ng-container matColumnDef="fullName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom complet</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'MEMBERS.FULL_NAME' | translate }}</th>
         <td mat-cell *matCellDef="let member">
           {{ getFullName(member) }}
         </td>
@@ -49,12 +49,14 @@
       </ng-container>
 
       <ng-container matColumnDef="phoneNumber">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Téléphone</th>
-        <td mat-cell *matCellDef="let member">{{ member.phoneNumber }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.PHONE' | translate }}</th>
+        <td mat-cell *matCellDef="let member">
+          <div *ngFor="let phone of member.phoneNumber?.split(';')">{{ phone.trim() }}</div>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="role">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rôle</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.ROLE' | translate }}</th>
         <td mat-cell *matCellDef="let member">
           <mat-chip [class]="getRoleClass(member.role)">
             {{ getRoleLabel(member.role) }}
@@ -63,53 +65,53 @@
       </ng-container>
 
       <ng-container matColumnDef="building">
-        <th mat-header-cell *matHeaderCellDef>Immeuble</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'MEMBERS.BUILDING' | translate }}</th>
         <td mat-cell *matCellDef="let member">
           {{ member.buildingNumber || '-' }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="apartment">
-        <th mat-header-cell *matHeaderCellDef>Appartement</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'MEMBERS.APARTMENT' | translate }}</th>
         <td mat-cell *matCellDef="let member">
           {{ member.apartmentNumber || '-' }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="isActive">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.STATUS' | translate }}</th>
         <td mat-cell *matCellDef="let member">
           <mat-chip [class.active-chip]="member.isActive" [class.inactive-chip]="!member.isActive">
-            {{ member.isActive ? 'Actif' : 'Inactif' }}
+            {{ member.isActive ? ('COMMON.ACTIVE' | translate) : ('COMMON.INACTIVE' | translate) }}
           </mat-chip>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
         <td mat-cell *matCellDef="let member">
-          <button 
+          <button
             *ngIf="isAdmin || isSuperAdmin"
-            mat-icon-button 
-            color="primary" 
-            (click)="openContactDialog(member)" 
-            matTooltip="Contacter par email">
+            mat-icon-button
+            color="primary"
+            (click)="openContactDialog(member)"
+            [matTooltip]="'MEMBERS.TOOLTIP_CONTACT' | translate">
             <mat-icon>email</mat-icon>
           </button>
-          <button 
+          <button
             *ngIf="isSuperAdmin"
-            mat-icon-button 
-            color="accent" 
-            (click)="openEditDialog(member)" 
-            matTooltip="Modifier">
+            mat-icon-button
+            color="accent"
+            (click)="openEditDialog(member)"
+            [matTooltip]="'COMMON.EDIT' | translate">
             <mat-icon>edit</mat-icon>
           </button>
-          <button 
+          <button
             *ngIf="isSuperAdmin"
-            mat-icon-button 
-            color="warn" 
-            (click)="deleteMember(member)" 
-            matTooltip="Supprimer">
+            mat-icon-button
+            color="warn"
+            (click)="deleteMember(member)"
+            [matTooltip]="'COMMON.DELETE' | translate">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
@@ -120,15 +122,15 @@
 
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-          Aucun adhérent trouvé
+          {{ 'MEMBERS.NOT_FOUND' | translate }}
         </td>
       </tr>
 
     </table>
   </div>
 
-  <mat-paginator 
-    [pageSizeOptions]="[10, 25, 50, 100]" 
+  <mat-paginator
+    [pageSizeOptions]="[10, 25, 50, 100]"
     showFirstLastButtons>
   </mat-paginator>
 </div>

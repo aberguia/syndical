@@ -1,23 +1,23 @@
 <div class="container">
   <div class="header">
-    <h1>Gestion des Voitures</h1>
+    <h1>{{ 'PARKING.CARS_TITLE' | translate }}</h1>
     <button mat-raised-button color="primary" (click)="openAddDialog()">
       <mat-icon>add</mat-icon>
-      Ajouter une voiture
+      {{ 'PARKING.ADD_CAR' | translate }}
     </button>
   </div>
 
   <div class="filters">
     <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Rechercher par plaque (ex: 12345-أ-67)</mat-label>
-      <input matInput [formControl]="searchControl" placeholder="Numéro de plaque">
+      <mat-label>{{ 'PARKING.SEARCH_PLATE' | translate }}</mat-label>
+      <input matInput [formControl]="searchControl" [placeholder]="'PARKING.PLATE' | translate">
       <mat-icon matPrefix>search</mat-icon>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="building-filter">
-      <mat-label>Filtrer par immeuble</mat-label>
+      <mat-label>{{ 'PARKING.FILTER_BUILDING' | translate }}</mat-label>
       <mat-select [formControl]="buildingFilter">
-        <mat-option [value]="0">Tous les immeubles</mat-option>
+        <mat-option [value]="0">{{ 'PARKING.ALL_BUILDINGS' | translate }}</mat-option>
         <mat-option *ngFor="let building of buildings" [value]="building.id">
           {{ building.name }}
         </mat-option>
@@ -33,13 +33,13 @@
     <table mat-table [dataSource]="dataSource" matSort *ngIf="!loading">
       <!-- Marque Column -->
       <ng-container matColumnDef="brand">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Marque</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'PARKING.BRAND' | translate }}</th>
         <td mat-cell *matCellDef="let car">{{ car.brandDisplay }}</td>
       </ng-container>
 
       <!-- Plaque Column -->
       <ng-container matColumnDef="plate">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Plaque</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'PARKING.PLATE' | translate }}</th>
         <td mat-cell *matCellDef="let car">
           <strong>{{ car.plateFormatted }}</strong>
         </td>
@@ -47,7 +47,7 @@
 
       <!-- Type Column -->
       <ng-container matColumnDef="carType">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'PARKING.TYPE' | translate }}</th>
         <td mat-cell *matCellDef="let car">
           <mat-chip [ngClass]="getCarTypeClass(car.carType)">
             {{ car.carTypeDisplay }}
@@ -57,7 +57,7 @@
 
       <!-- Adhérent Column -->
       <ng-container matColumnDef="member">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Adhérent</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'PARKING.OWNER' | translate }}</th>
         <td mat-cell *matCellDef="let car">
           <a class="member-link" (click)="viewMemberDetails(car)" *ngIf="car.memberId">
             {{ car.memberFullName }}
@@ -68,24 +68,24 @@
 
       <!-- Immeuble Column -->
       <ng-container matColumnDef="building">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Immeuble</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.BUILDING' | translate }}</th>
         <td mat-cell *matCellDef="let car">{{ car.buildingCode }}</td>
       </ng-container>
 
       <!-- Appartement Column -->
       <ng-container matColumnDef="apartment">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Appartement</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.APARTMENT' | translate }}</th>
         <td mat-cell *matCellDef="let car">{{ car.apartmentNumber }}</td>
       </ng-container>
 
       <!-- Actions Column -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
         <td mat-cell *matCellDef="let car">
-          <button mat-icon-button color="primary" (click)="openEditDialog(car)" matTooltip="Modifier">
+          <button mat-icon-button color="primary" (click)="openEditDialog(car)" [matTooltip]="'COMMON.EDIT' | translate">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="deleteCar(car)" matTooltip="Supprimer">
+          <button mat-icon-button color="warn" (click)="deleteCar(car)" [matTooltip]="'COMMON.DELETE' | translate">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
@@ -95,7 +95,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator 
+    <mat-paginator
       *ngIf="!loading"
       [pageSizeOptions]="[10, 25, 50, 100]"
       showFirstLastButtons>

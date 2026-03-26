@@ -1,17 +1,17 @@
 <div class="apartments-container">
   <div class="header">
-    <h1>Gestion des Appartements</h1>
+    <h1>{{ 'APARTMENTS.TITLE' | translate }}</h1>
     <button mat-raised-button color="primary" (click)="openAddDialog()">
       <mat-icon>add</mat-icon>
-      Ajouter un appartement
+      {{ 'APARTMENTS.ADD' | translate }}
     </button>
   </div>
 
   <div class="filters">
     <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Filtrer par immeuble</mat-label>
+      <mat-label>{{ 'APARTMENTS.FILTER_BUILDING' | translate }}</mat-label>
       <mat-select [formControl]="buildingFilter">
-        <mat-option [value]="0">Tous les immeubles</mat-option>
+        <mat-option [value]="0">{{ 'APARTMENTS.ALL_BUILDINGS' | translate }}</mat-option>
         <mat-option *ngFor="let building of buildings" [value]="building.id">
           {{ building.buildingNumber }} - {{ building.name }}
         </mat-option>
@@ -19,8 +19,8 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Rechercher</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Numéro, étage...">
+      <mat-label>{{ 'COMMON.SEARCH' | translate }}</mat-label>
+      <input matInput (keyup)="applyFilter($event)" [placeholder]="'APARTMENTS.SEARCH_PLACEHOLDER' | translate">
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
   </div>
@@ -31,80 +31,80 @@
 
   <div *ngIf="!loading" class="table-container">
     <table mat-table [dataSource]="dataSource" matSort class="apartments-table">
-      
+
       <ng-container matColumnDef="buildingNumber">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Immeuble</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'APARTMENTS.BUILDING' | translate }}</th>
         <td mat-cell *matCellDef="let apartment">
           {{ apartment.buildingNumber || apartment.buildingName }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="apartmentNumber">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>N° Appartement</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'APARTMENTS.NUMBER' | translate }}</th>
         <td mat-cell *matCellDef="let apartment">{{ apartment.apartmentNumber }}</td>
       </ng-container>
 
       <ng-container matColumnDef="floor">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Étage</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'APARTMENTS.FLOOR' | translate }}</th>
         <td mat-cell *matCellDef="let apartment">{{ apartment.floor }}</td>
       </ng-container>
 
       <ng-container matColumnDef="adherent">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Adhérent</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'APARTMENTS.MEMBER' | translate }}</th>
         <td mat-cell *matCellDef="let apartment">
-          <span 
-            *ngIf="apartment.memberFullName" 
-            class="adherent-link" 
-            (click)="viewMemberDetails(apartment)">
-            {{ apartment.memberFullName }}
-          </span>
-          <span 
-            *ngIf="!apartment.memberFullName" 
-            class="no-adherent">
-            —
-          </span>
+          <ng-container *ngIf="apartment.residents?.length; else noResident">
+            <span
+              *ngFor="let resident of apartment.residents; let last = last"
+              class="adherent-link"
+              (click)="viewMemberDetails(resident.id)">
+              {{ resident.fullName }}<span *ngIf="!last">, </span>
+            </span>
+          </ng-container>
+          <ng-template #noResident>
+            <span class="no-adherent">—</span>
+          </ng-template>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="isActive">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.STATUS' | translate }}</th>
         <td mat-cell *matCellDef="let apartment">
           <mat-chip [class.active-chip]="apartment.isActive" [class.inactive-chip]="!apartment.isActive">
-            {{ apartment.isActive ? 'Actif' : 'Inactif' }}
+            {{ apartment.isActive ? ('COMMON.ACTIVE' | translate) : ('COMMON.INACTIVE' | translate) }}
           </mat-chip>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="cotisations">
-        <th mat-header-cell *matHeaderCellDef>Cotisations (année en cours)</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'APARTMENTS.COTISATIONS' | translate }}</th>
         <td mat-cell *matCellDef="let apartment" class="cotisations-cell">
           <app-payment-status-bar [data]="getPaymentStatus(apartment.id)"></app-payment-status-bar>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
         <td mat-cell *matCellDef="let apartment">
-          <button mat-icon-button color="primary" (click)="openEditDialog(apartment)" matTooltip="Modifier">
+          <button mat-icon-button color="primary" (click)="openEditDialog(apartment)" [matTooltip]="'COMMON.EDIT' | translate">
             <mat-icon>edit</mat-icon>
           </button>
-          <button 
+          <button
             *ngIf="isSuperAdminOrAdmin"
-            mat-icon-button 
-            color="accent" 
-            (click)="openPaymentDialog(apartment)" 
-            matTooltip="Enregistrer un paiement">
+            mat-icon-button
+            color="accent"
+            (click)="openPaymentDialog(apartment)"
+            [matTooltip]="'APARTMENTS.TOOLTIP_PAYMENT' | translate">
             <mat-icon>attach_money</mat-icon>
           </button>
-          <button 
+          <button
             *ngIf="isSuperAdminOrAdmin"
-            mat-icon-button 
-            color="primary" 
-            (click)="openReceiptDialog(apartment)" 
-            matTooltip="Générer un reçu PDF">
+            mat-icon-button
+            color="primary"
+            (click)="openReceiptDialog(apartment)"
+            [matTooltip]="'APARTMENTS.TOOLTIP_RECEIPT' | translate">
             <mat-icon>receipt_long</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="deleteApartment(apartment)" matTooltip="Supprimer">
+          <button mat-icon-button color="warn" (click)="deleteApartment(apartment)" [matTooltip]="'COMMON.DELETE' | translate">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
@@ -115,7 +115,7 @@
 
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-          Aucun appartement trouvé
+          {{ 'APARTMENTS.NOT_FOUND' | translate }}
         </td>
       </tr>
     </table>

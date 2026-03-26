@@ -3,20 +3,20 @@
     <mat-card-header>
       <mat-card-title>
         <mat-icon>assessment</mat-icon>
-        Bilan financier
+        {{ 'FINANCES.REPORTS_TITLE' | translate }}
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <form [formGroup]="form" class="period-selector">
         <mat-form-field appearance="outline">
-          <mat-label>Date début</mat-label>
+          <mat-label>{{ 'FINANCES.DATE_START' | translate }}</mat-label>
           <input matInput [matDatepicker]="pickerFrom" formControlName="fromDate">
           <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
           <mat-datepicker #pickerFrom></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Date fin</mat-label>
+          <mat-label>{{ 'FINANCES.DATE_END' | translate }}</mat-label>
           <input matInput [matDatepicker]="pickerTo" formControlName="toDate">
           <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
           <mat-datepicker #pickerTo></mat-datepicker>
@@ -24,23 +24,23 @@
 
         <button mat-raised-button color="primary" (click)="loadSummary()" [disabled]="loading">
           <mat-icon>refresh</mat-icon>
-          Actualiser
+          {{ 'FINANCES.REFRESH' | translate }}
         </button>
 
         <button mat-raised-button color="accent" (click)="exportPdf()" [disabled]="loading || !summary">
           <mat-icon>picture_as_pdf</mat-icon>
-          Exporter PDF
+          {{ 'FINANCES.EXPORT_PDF' | translate }}
         </button>
       </form>
 
       <div class="quick-filters">
         <button mat-stroked-button (click)="setCurrentYear()">
           <mat-icon>calendar_today</mat-icon>
-          Année courante
+          {{ 'FINANCES.CURRENT_YEAR' | translate }}
         </button>
         <button mat-stroked-button (click)="setCurrentMonth()">
           <mat-icon>event</mat-icon>
-          Mois courant
+          {{ 'FINANCES.CURRENT_MONTH' | translate }}
         </button>
         <button mat-stroked-button (click)="setQuarter(1)">Q1</button>
         <button mat-stroked-button (click)="setQuarter(2)">Q2</button>
@@ -59,11 +59,9 @@
     <div class="kpi-cards">
       <mat-card class="kpi-card revenues-card">
         <mat-card-content>
-          <div class="kpi-icon">
-            <mat-icon>trending_up</mat-icon>
-          </div>
+          <div class="kpi-icon"><mat-icon>trending_up</mat-icon></div>
           <div class="kpi-info">
-            <div class="kpi-label">Total Revenus</div>
+            <div class="kpi-label">{{ 'FINANCES.TOTAL_REVENUES' | translate }}</div>
             <div class="kpi-value">{{ formatAmount(summary.totals.totalRevenues) }}</div>
           </div>
         </mat-card-content>
@@ -71,11 +69,9 @@
 
       <mat-card class="kpi-card expenses-card">
         <mat-card-content>
-          <div class="kpi-icon">
-            <mat-icon>trending_down</mat-icon>
-          </div>
+          <div class="kpi-icon"><mat-icon>trending_down</mat-icon></div>
           <div class="kpi-info">
-            <div class="kpi-label">Total Dépenses</div>
+            <div class="kpi-label">{{ 'FINANCES.TOTAL_EXPENSES' | translate }}</div>
             <div class="kpi-value">{{ formatAmount(summary.totals.expenses) }}</div>
           </div>
         </mat-card-content>
@@ -95,11 +91,9 @@
 
       <mat-card class="kpi-card collection-card">
         <mat-card-content>
-          <div class="kpi-icon">
-            <mat-icon>account_balance_wallet</mat-icon>
-          </div>
+          <div class="kpi-icon"><mat-icon>account_balance_wallet</mat-icon></div>
           <div class="kpi-info">
-            <div class="kpi-label">Taux de recouvrement</div>
+            <div class="kpi-label">{{ 'FINANCES.RECOVERY_RATE' | translate }}</div>
             <div class="kpi-value">{{ formatPercent(summary.collectionRate.rate) }}</div>
             <div class="kpi-subtext">
               {{ formatAmount(summary.collectionRate.collectedAmount) }} / {{ formatAmount(summary.collectionRate.expectedAmount) }}
@@ -112,29 +106,29 @@
     <!-- Synthèse -->
     <mat-card class="detail-card">
       <mat-card-header>
-        <mat-card-title>Synthèse</mat-card-title>
+        <mat-card-title>{{ 'FINANCES.REVENUES_CONTRIBUTIONS' | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <table class="synthesis-table">
           <tbody>
             <tr>
-              <td class="label">Revenus cotisations</td>
+              <td class="label">{{ 'FINANCES.REVENUES_CONTRIBUTIONS' | translate }}</td>
               <td class="amount">{{ formatAmount(summary.totals.contributions) }}</td>
             </tr>
             <tr>
-              <td class="label">Autres revenus</td>
+              <td class="label">{{ 'FINANCES.OTHER_REVENUES' | translate }}</td>
               <td class="amount">{{ formatAmount(summary.totals.otherRevenues) }}</td>
             </tr>
             <tr class="total-row">
-              <td class="label"><strong>Total revenus</strong></td>
+              <td class="label"><strong>{{ 'FINANCES.TOTAL_REVENUES_ROW' | translate }}</strong></td>
               <td class="amount"><strong>{{ formatAmount(summary.totals.totalRevenues) }}</strong></td>
             </tr>
             <tr>
-              <td class="label">Dépenses</td>
+              <td class="label">{{ 'FINANCES.TOTAL_EXPENSES' | translate }}</td>
               <td class="amount expenses-amount">{{ formatAmount(summary.totals.expenses) }}</td>
             </tr>
             <tr class="result-row" [ngClass]="getResultClass(summary.totals.netResult)">
-              <td class="label"><strong>Résultat net</strong></td>
+              <td class="label"><strong>{{ 'FINANCES.NET_RESULT' | translate }}</strong></td>
               <td class="amount"><strong>{{ formatAmount(summary.totals.netResult) }}</strong></td>
             </tr>
           </tbody>
@@ -145,43 +139,35 @@
     <!-- Évolution mensuelle -->
     <mat-card class="detail-card" *ngIf="summary.byMonth.length > 0">
       <mat-card-header>
-        <mat-card-title>Évolution mensuelle</mat-card-title>
+        <mat-card-title>{{ 'FINANCES.MONTHLY_EVOLUTION' | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="table-container">
           <table mat-table [dataSource]="summary.byMonth" class="monthly-table">
             <ng-container matColumnDef="month">
-              <th mat-header-cell *matHeaderCellDef>Mois</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.REPORT_MONTH' | translate }}</th>
               <td mat-cell *matCellDef="let row">{{ formatMonth(row.month) }}</td>
             </ng-container>
-
             <ng-container matColumnDef="contributions">
-              <th mat-header-cell *matHeaderCellDef>Cotisations</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.REVENUES_CONTRIBUTIONS' | translate }}</th>
               <td mat-cell *matCellDef="let row">{{ formatAmount(row.contributions) }}</td>
             </ng-container>
-
             <ng-container matColumnDef="otherRevenues">
-              <th mat-header-cell *matHeaderCellDef>Autres revenus</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.OTHER_REVENUES' | translate }}</th>
               <td mat-cell *matCellDef="let row">{{ formatAmount(row.otherRevenues) }}</td>
             </ng-container>
-
             <ng-container matColumnDef="totalRevenues">
-              <th mat-header-cell *matHeaderCellDef>Total revenus</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.TOTAL_REVENUES_ROW' | translate }}</th>
               <td mat-cell *matCellDef="let row" class="total-column">{{ formatAmount(row.totalRevenues) }}</td>
             </ng-container>
-
             <ng-container matColumnDef="expenses">
-              <th mat-header-cell *matHeaderCellDef>Dépenses</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.TOTAL_EXPENSES' | translate }}</th>
               <td mat-cell *matCellDef="let row" class="expenses-column">{{ formatAmount(row.expenses) }}</td>
             </ng-container>
-
             <ng-container matColumnDef="netResult">
-              <th mat-header-cell *matHeaderCellDef>Résultat</th>
-              <td mat-cell *matCellDef="let row" [ngClass]="getResultClass(row.netResult)">
-                {{ formatAmount(row.netResult) }}
-              </td>
+              <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.NET_RESULT' | translate }}</th>
+              <td mat-cell *matCellDef="let row" [ngClass]="getResultClass(row.netResult)">{{ formatAmount(row.netResult) }}</td>
             </ng-container>
-
             <tr mat-header-row *matHeaderRowDef="monthlyColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: monthlyColumns;"></tr>
           </table>
@@ -193,26 +179,23 @@
     <div class="ventilation-cards">
       <mat-card class="detail-card" *ngIf="summary.expensesByCategory.length > 0">
         <mat-card-header>
-          <mat-card-title>Dépenses par catégorie</mat-card-title>
+          <mat-card-title>{{ 'FINANCES.EXPENSES_BY_CATEGORY' | translate }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="table-container">
             <table mat-table [dataSource]="summary.expensesByCategory" class="category-table">
               <ng-container matColumnDef="categoryName">
-                <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+                <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.CATEGORY' | translate }}</th>
                 <td mat-cell *matCellDef="let row">{{ row.categoryName }}</td>
               </ng-container>
-
               <ng-container matColumnDef="amount">
-                <th mat-header-cell *matHeaderCellDef>Montant</th>
+                <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.AMOUNT' | translate }}</th>
                 <td mat-cell *matCellDef="let row">{{ formatAmount(row.amount) }}</td>
               </ng-container>
-
               <ng-container matColumnDef="percent">
                 <th mat-header-cell *matHeaderCellDef>%</th>
                 <td mat-cell *matCellDef="let row">{{ formatPercent(row.percent) }}</td>
               </ng-container>
-
               <tr mat-header-row *matHeaderRowDef="expensesColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: expensesColumns;"></tr>
             </table>
@@ -222,26 +205,23 @@
 
       <mat-card class="detail-card" *ngIf="summary.otherRevenuesByTitle.length > 0">
         <mat-card-header>
-          <mat-card-title>Autres revenus par type</mat-card-title>
+          <mat-card-title>{{ 'FINANCES.OTHER_REVENUES_BY_TYPE' | translate }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="table-container">
             <table mat-table [dataSource]="summary.otherRevenuesByTitle" class="category-table">
               <ng-container matColumnDef="title">
-                <th mat-header-cell *matHeaderCellDef>Titre</th>
+                <th mat-header-cell *matHeaderCellDef>{{ 'FINANCES.TITLE' | translate }}</th>
                 <td mat-cell *matCellDef="let row">{{ row.title }}</td>
               </ng-container>
-
               <ng-container matColumnDef="amount">
-                <th mat-header-cell *matHeaderCellDef>Montant</th>
+                <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.AMOUNT' | translate }}</th>
                 <td mat-cell *matCellDef="let row">{{ formatAmount(row.amount) }}</td>
               </ng-container>
-
               <ng-container matColumnDef="percent">
                 <th mat-header-cell *matHeaderCellDef>%</th>
                 <td mat-cell *matCellDef="let row">{{ formatPercent(row.percent) }}</td>
               </ng-container>
-
               <tr mat-header-row *matHeaderRowDef="revenuesColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: revenuesColumns;"></tr>
             </table>
@@ -253,6 +233,6 @@
 
   <div *ngIf="!loading && !summary" class="no-data">
     <mat-icon>info</mat-icon>
-    <p>Aucune donnée disponible pour la période sélectionnée</p>
+    <p>{{ 'FINANCES.NO_DATA_PERIOD' | translate }}</p>
   </div>
 </div>

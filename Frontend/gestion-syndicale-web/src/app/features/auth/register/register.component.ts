@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
@@ -20,7 +21,8 @@ import { AuthService } from '../../../core/services/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslateModule
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']

@@ -60,11 +60,11 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configuration User - Apartment (1 appartement = 1 user max)
+        // Configuration User - Apartment (1 appartement = N adhérents)
         modelBuilder.Entity<User>()
             .HasOne(u => u.Apartment)
-            .WithOne(a => a.PrimaryOwner)
-            .HasForeignKey<User>(u => u.ApartmentId)
+            .WithMany(a => a.Residents)
+            .HasForeignKey(u => u.ApartmentId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Configuration UserRole (clé composite)
@@ -74,7 +74,7 @@ public class ApplicationDbContext : DbContext
         // Index pour performance
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
-            .IsUnique();
+            .IsUnique(); // MySQL autorise plusieurs NULL dans un index unique
 
         modelBuilder.Entity<Apartment>()
             .HasIndex(a => new { a.BuildingId, a.ApartmentNumber })

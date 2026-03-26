@@ -1,9 +1,9 @@
 <div class="notes-container">
   <div class="header">
-    <h2>Gestion des Notes</h2>
+    <h2>{{ 'NOTES.TITLE' | translate }}</h2>
     <button mat-raised-button color="primary" (click)="openAddDialog()">
       <mat-icon>add</mat-icon>
-      Ajouter une Note
+      {{ 'NOTES.ADD' | translate }}
     </button>
   </div>
 
@@ -11,15 +11,15 @@
     <mat-card-content>
       <div class="filters-row">
         <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Rechercher</mat-label>
-          <input matInput [formControl]="searchControl" placeholder="Nom de l'adhérent ou texte de la note">
+          <mat-label>{{ 'COMMON.SEARCH' | translate }}</mat-label>
+          <input matInput [formControl]="searchControl" [placeholder]="'NOTES.SEARCH_PLACEHOLDER' | translate">
           <mat-icon matPrefix>search</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Immeuble</mat-label>
+          <mat-label>{{ 'COMMON.BUILDING' | translate }}</mat-label>
           <mat-select [formControl]="buildingFilter">
-            <mat-option [value]="0">Tous les immeubles</mat-option>
+            <mat-option [value]="0">{{ 'APARTMENTS.ALL_BUILDINGS' | translate }}</mat-option>
             <mat-option *ngFor="let building of buildings" [value]="building.id">
               {{ building.name }}
             </mat-option>
@@ -27,9 +27,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Appartement</mat-label>
+          <mat-label>{{ 'COMMON.APARTMENT' | translate }}</mat-label>
           <mat-select [formControl]="apartmentFilter" [disabled]="apartments.length === 0">
-            <mat-option [value]="0">Tous les appartements</mat-option>
+            <mat-option [value]="0">{{ 'NOTES.ALL_APARTMENTS' | translate }}</mat-option>
             <mat-option *ngFor="let apartment of apartments" [value]="apartment.id">
               {{ apartment.apartmentNumber }}
             </mat-option>
@@ -47,28 +47,28 @@
 
       <div *ngIf="!loading">
         <table mat-table [dataSource]="dataSource" matSort class="notes-table">
-          
+
           <!-- Adhérent Column -->
           <ng-container matColumnDef="memberFullName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Adhérent</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'NOTES.MEMBER' | translate }}</th>
             <td mat-cell *matCellDef="let note">{{ note.memberFullName }}</td>
           </ng-container>
 
           <!-- Immeuble Column -->
           <ng-container matColumnDef="buildingCodeOrName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Immeuble</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.BUILDING' | translate }}</th>
             <td mat-cell *matCellDef="let note">{{ note.buildingCodeOrName }}</td>
           </ng-container>
 
           <!-- Appartement Column -->
           <ng-container matColumnDef="apartmentNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Appartement</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.APARTMENT' | translate }}</th>
             <td mat-cell *matCellDef="let note">{{ note.apartmentNumber }}</td>
           </ng-container>
 
           <!-- Note Column -->
           <ng-container matColumnDef="noteText">
-            <th mat-header-cell *matHeaderCellDef>Note</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'NOTES.NOTE_COLUMN' | translate }}</th>
             <td mat-cell *matCellDef="let note" class="note-text-cell">
               <span class="note-text-truncated">{{ getTruncatedNote(note.noteText) }}</span>
             </td>
@@ -76,32 +76,32 @@
 
           <!-- Date Column -->
           <ng-container matColumnDef="createdAt">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date de création</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'NOTES.CREATED_AT' | translate }}</th>
             <td mat-cell *matCellDef="let note">{{ note.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
           </ng-container>
 
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
             <td mat-cell *matCellDef="let note" class="actions-cell">
-              <button 
-                mat-icon-button 
-                (click)="openViewDialog(note)" 
-                matTooltip="Voir la note">
+              <button
+                mat-icon-button
+                (click)="openViewDialog(note)"
+                [matTooltip]="'NOTES.TOOLTIP_VIEW' | translate">
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button 
-                mat-icon-button 
-                (click)="openEditDialog(note)" 
-                matTooltip="Modifier"
+              <button
+                mat-icon-button
+                (click)="openEditDialog(note)"
+                [matTooltip]="'COMMON.EDIT' | translate"
                 color="primary">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button 
+              <button
                 *ngIf="isSuperAdmin"
-                mat-icon-button 
-                (click)="deleteNote(note)" 
-                matTooltip="Supprimer"
+                mat-icon-button
+                (click)="deleteNote(note)"
+                [matTooltip]="'COMMON.DELETE' | translate"
                 color="warn">
                 <mat-icon>delete</mat-icon>
               </button>
@@ -114,13 +114,13 @@
           <!-- No data row -->
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-              Aucune note trouvée
+              {{ 'NOTES.NOT_FOUND' | translate }}
             </td>
           </tr>
         </table>
 
-        <mat-paginator 
-          [pageSizeOptions]="[10, 25, 50, 100]" 
+        <mat-paginator
+          [pageSizeOptions]="[10, 25, 50, 100]"
           [pageSize]="25"
           showFirstLastButtons>
         </mat-paginator>

@@ -16,6 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SupplierService } from '../../../core/services/supplier.service';
 import { SupplierListDto, SERVICE_CATEGORIES } from '../../../core/models/supplier.models';
 import { SupplierDialogComponent } from './supplier-dialog/supplier-dialog.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin-suppliers-list',
@@ -34,7 +35,8 @@ import { SupplierDialogComponent } from './supplier-dialog/supplier-dialog.compo
     MatChipsModule,
     MatTooltipModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ],
   templateUrl: './admin-suppliers-list.component.html',
   styleUrls: ['./admin-suppliers-list.component.scss']

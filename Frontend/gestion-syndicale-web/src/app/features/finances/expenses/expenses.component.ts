@@ -23,6 +23,7 @@ import { AddEditExpenseDialogComponent } from './add-edit-expense-dialog.compone
 import { AttachmentsDialogComponent } from './attachments-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-expenses',
@@ -44,7 +45,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
     MatCardModule,
     MatTooltipModule,
     MatChipsModule,
-    MatBadgeModule
+    MatBadgeModule,
+    TranslateModule
   ],
   templateUrl: './expenses.component.html',
   styleUrl: './expenses.component.scss'

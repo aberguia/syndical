@@ -236,7 +236,7 @@ namespace GestionSyndicale.API.Controllers
                 var legalName = _configuration["Syndic:LegalName"] ?? "Syndic";
 
                 // Generate PDF
-                var pdfService = new FinancialReportPdfService(residenceName, legalName);
+                var pdfService = new FinancialReportPdfService(residenceName, legalName, request.Lang);
                 var pdfBytes = pdfService.GenerateFinancialSummaryPdf(summary);
 
                 var fileName = $"bilan_{request.From}_{request.To}.pdf";

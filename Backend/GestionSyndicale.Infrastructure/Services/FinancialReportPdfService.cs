@@ -9,15 +9,103 @@ public class FinancialReportPdfService
 {
     private readonly string _residenceName;
     private readonly string _legalName;
+    private readonly string _lang;
+    private readonly Dictionary<string, string> _L;
 
-    public FinancialReportPdfService(string residenceName, string legalName)
+    public FinancialReportPdfService(string residenceName, string legalName, string lang = "fr")
     {
         _residenceName = residenceName;
-        _legalName = legalName;
-        
-        // Configure QuestPDF license
+        _legalName     = legalName;
+        _lang          = lang;
+        _L             = GetLabels(lang);
+
         QuestPDF.Settings.License = LicenseType.Community;
     }
+
+    // ─── Label dictionary ─────────────────────────────────────────────────────
+
+    private static Dictionary<string, string> GetLabels(string lang)
+    {
+        if (lang == "ar")
+        {
+            return new Dictionary<string, string>
+            {
+                ["report_title"]        = "البيان المالي",
+                ["period"]              = "الفترة",
+                ["from"]                = "من",
+                ["to"]                  = "إلى",
+                ["synthesis"]           = "ملخص مالي",
+                ["contributions"]       = "إيرادات الاشتراكات",
+                ["other_revenues"]      = "إيرادات أخرى",
+                ["total_revenues"]      = "إجمالي الإيرادات",
+                ["expenses"]            = "النفقات",
+                ["net_result"]          = "الصافي",
+                ["surplus"]             = "(فائض)",
+                ["deficit"]             = "(عجز)",
+                ["kpi_revenues"]        = "إجمالي الإيرادات",
+                ["kpi_expenses"]        = "إجمالي النفقات",
+                ["kpi_rate"]            = "معدل التحصيل",
+                ["monthly_evolution"]   = "التطور الشهري",
+                ["col_month"]           = "الشهر",
+                ["col_contributions"]   = "الاشتراكات",
+                ["col_other_rev"]       = "إيرادات أخرى",
+                ["col_total_rev"]       = "إجمالي الإيرادات",
+                ["col_expenses"]        = "النفقات",
+                ["col_result"]          = "النتيجة",
+                ["expenses_by_cat"]     = "النفقات حسب الفئة",
+                ["col_category"]        = "الفئة",
+                ["col_amount"]          = "المبلغ",
+                ["revenues_by_type"]    = "الإيرادات الأخرى حسب النوع",
+                ["col_title"]           = "العنوان",
+                ["generated_on"]        = "تم إنشاؤه في",
+            };
+        }
+        return new Dictionary<string, string>
+        {
+            ["report_title"]        = "Bilan Financier",
+            ["period"]              = "Période",
+            ["from"]                = "du",
+            ["to"]                  = "au",
+            ["synthesis"]           = "SYNTHÈSE FINANCIÈRE",
+            ["contributions"]       = "Revenus des cotisations",
+            ["other_revenues"]      = "Autres revenus",
+            ["total_revenues"]      = "Total revenus",
+            ["expenses"]            = "Dépenses",
+            ["net_result"]          = "RÉSULTAT NET",
+            ["surplus"]             = "(Excédent)",
+            ["deficit"]             = "(Déficit)",
+            ["kpi_revenues"]        = "Total Revenus",
+            ["kpi_expenses"]        = "Total Dépenses",
+            ["kpi_rate"]            = "Taux de recouvrement",
+            ["monthly_evolution"]   = "ÉVOLUTION MENSUELLE",
+            ["col_month"]           = "Mois",
+            ["col_contributions"]   = "Cotisations",
+            ["col_other_rev"]       = "Autres Rev.",
+            ["col_total_rev"]       = "Total Rev.",
+            ["col_expenses"]        = "Dépenses",
+            ["col_result"]          = "Résultat",
+            ["expenses_by_cat"]     = "Dépenses par catégorie",
+            ["col_category"]        = "Catégorie",
+            ["col_amount"]          = "Montant",
+            ["revenues_by_type"]    = "Autres revenus par type",
+            ["col_title"]           = "Titre",
+            ["generated_on"]        = "Généré le",
+        };
+    }
+
+    // ─── Month names ──────────────────────────────────────────────────────────
+
+    private string[] GetMonthNames()
+    {
+        if (_lang == "ar")
+            return new[] { "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+                           "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر" };
+
+        return new[] { "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                       "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" };
+    }
+
+    // ─── Public entry point ───────────────────────────────────────────────────
 
     public byte[] GenerateFinancialSummaryPdf(FinancialSummaryDto summary)
     {
@@ -34,7 +122,7 @@ public class FinancialReportPdfService
                 page.Content().Element(content => ComposeContent(content, summary));
                 page.Footer().AlignCenter().Text(text =>
                 {
-                    text.Span("Généré le ").FontSize(9).FontColor(Colors.Grey.Medium);
+                    text.Span($"{_L["generated_on"]} ").FontSize(9).FontColor(Colors.Grey.Medium);
                     text.Span(DateTime.Now.ToString("dd/MM/yyyy à HH:mm")).FontSize(9).FontColor(Colors.Grey.Medium);
                 });
             });
@@ -43,26 +131,22 @@ public class FinancialReportPdfService
         return document.GeneratePdf();
     }
 
+    // ─── Sections ─────────────────────────────────────────────────────────────
+
     private void ComposeHeader(IContainer container)
     {
         container.Column(column =>
         {
             column.Item().AlignCenter().Text(_residenceName)
-                .FontSize(18)
-                .Bold()
-                .FontColor(Colors.Blue.Darken2);
+                .FontSize(18).Bold().FontColor(Colors.Blue.Darken2);
 
             column.Item().AlignCenter().Text(_legalName)
-                .FontSize(12)
-                .FontColor(Colors.Grey.Darken1);
+                .FontSize(12).FontColor(Colors.Grey.Darken1);
 
-            column.Item().PaddingTop(10).AlignCenter().Text("Bilan Financier")
-                .FontSize(16)
-                .Bold()
-                .FontColor(Colors.Grey.Darken3);
+            column.Item().PaddingTop(10).AlignCenter().Text(_L["report_title"])
+                .FontSize(16).Bold().FontColor(Colors.Grey.Darken3);
 
-            column.Item().PaddingTop(5).AlignCenter().LineHorizontal(2)
-                .LineColor(Colors.Blue.Darken2);
+            column.Item().PaddingTop(5).AlignCenter().LineHorizontal(2).LineColor(Colors.Blue.Darken2);
         });
     }
 
@@ -72,26 +156,18 @@ public class FinancialReportPdfService
         {
             column.Spacing(15);
 
-            // Période
             column.Item().Text(text =>
             {
-                text.Span("Période : ").Bold();
-                text.Span($"du {FormatDate(summary.From)} au {FormatDate(summary.To)}");
+                text.Span($"{_L["period"]} : ").Bold();
+                text.Span($"{_L["from"]} {FormatDate(summary.From)} {_L["to"]} {FormatDate(summary.To)}");
             });
 
-            // Synthèse
             column.Item().Element(c => ComposeSynthesis(c, summary.Totals));
-
-            // KPIs en cartes
             column.Item().Element(c => ComposeKPIs(c, summary.Totals, summary.CollectionRate));
 
-            // Évolution mensuelle
             if (summary.ByMonth.Count > 0)
-            {
                 column.Item().Element(c => ComposeMonthlyTable(c, summary.ByMonth));
-            }
 
-            // Ventilation
             column.Item().Row(row =>
             {
                 row.RelativeItem().Element(c => ComposeExpensesByCategory(c, summary.ExpensesByCategory));
@@ -105,43 +181,42 @@ public class FinancialReportPdfService
         container.Background(Colors.Grey.Lighten3).Padding(15).Column(column =>
         {
             column.Spacing(8);
-
-            column.Item().Text("SYNTHÈSE FINANCIÈRE").Bold().FontSize(14);
+            column.Item().Text(_L["synthesis"]).Bold().FontSize(14);
 
             column.Item().PaddingLeft(10).Column(inner =>
             {
                 inner.Spacing(5);
-                
+
                 inner.Item().Text(text =>
                 {
-                    text.Span("Revenus des cotisations : ").FontColor(Colors.Grey.Darken1);
+                    text.Span($"{_L["contributions"]} : ").FontColor(Colors.Grey.Darken1);
                     text.Span(FormatAmount(totals.Contributions)).Bold().FontColor(Colors.Green.Darken1);
                 });
 
                 inner.Item().Text(text =>
                 {
-                    text.Span("Autres revenus : ").FontColor(Colors.Grey.Darken1);
+                    text.Span($"{_L["other_revenues"]} : ").FontColor(Colors.Grey.Darken1);
                     text.Span(FormatAmount(totals.OtherRevenues)).Bold().FontColor(Colors.Green.Darken1);
                 });
 
                 inner.Item().BorderTop(1).BorderColor(Colors.Grey.Medium).PaddingTop(5).Text(text =>
                 {
-                    text.Span("Total revenus : ").Bold();
+                    text.Span($"{_L["total_revenues"]} : ").Bold();
                     text.Span(FormatAmount(totals.TotalRevenues)).Bold().FontSize(12).FontColor(Colors.Green.Darken2);
                 });
 
                 inner.Item().PaddingTop(5).Text(text =>
                 {
-                    text.Span("Dépenses : ").Bold();
+                    text.Span($"{_L["expenses"]} : ").Bold();
                     text.Span(FormatAmount(totals.Expenses)).Bold().FontSize(12).FontColor(Colors.Red.Darken1);
                 });
 
                 inner.Item().BorderTop(2).BorderColor(Colors.Grey.Darken2).PaddingTop(8).Text(text =>
                 {
-                    text.Span("RÉSULTAT NET : ").Bold().FontSize(13);
+                    text.Span($"{_L["net_result"]} : ").Bold().FontSize(13);
                     text.Span(FormatAmount(totals.NetResult)).Bold().FontSize(13)
                         .FontColor(totals.NetResult >= 0 ? Colors.Green.Darken2 : Colors.Orange.Darken2);
-                    text.Span(totals.NetResult >= 0 ? " (Excédent)" : " (Déficit)")
+                    text.Span(totals.NetResult >= 0 ? $" {_L["surplus"]}" : $" {_L["deficit"]}")
                         .FontSize(11).Italic().FontColor(Colors.Grey.Darken1);
                 });
             });
@@ -154,7 +229,7 @@ public class FinancialReportPdfService
         {
             row.RelativeItem().Background(Colors.Green.Lighten4).Padding(10).Column(c =>
             {
-                c.Item().Text("Total Revenus").FontSize(9).FontColor(Colors.Grey.Darken1);
+                c.Item().Text(_L["kpi_revenues"]).FontSize(9).FontColor(Colors.Grey.Darken1);
                 c.Item().Text(FormatAmount(totals.TotalRevenues)).Bold().FontSize(12).FontColor(Colors.Green.Darken2);
             });
 
@@ -162,7 +237,7 @@ public class FinancialReportPdfService
 
             row.RelativeItem().Background(Colors.Red.Lighten4).Padding(10).Column(c =>
             {
-                c.Item().Text("Total Dépenses").FontSize(9).FontColor(Colors.Grey.Darken1);
+                c.Item().Text(_L["kpi_expenses"]).FontSize(9).FontColor(Colors.Grey.Darken1);
                 c.Item().Text(FormatAmount(totals.Expenses)).Bold().FontSize(12).FontColor(Colors.Red.Darken2);
             });
 
@@ -170,7 +245,7 @@ public class FinancialReportPdfService
 
             row.RelativeItem().Background(Colors.Blue.Lighten4).Padding(10).Column(c =>
             {
-                c.Item().Text("Taux de recouvrement").FontSize(9).FontColor(Colors.Grey.Darken1);
+                c.Item().Text(_L["kpi_rate"]).FontSize(9).FontColor(Colors.Grey.Darken1);
                 c.Item().Text($"{collectionRate.Rate:F1}%").Bold().FontSize(12).FontColor(Colors.Blue.Darken2);
             });
         });
@@ -180,7 +255,7 @@ public class FinancialReportPdfService
     {
         container.Column(column =>
         {
-            column.Item().PaddingBottom(5).Text("ÉVOLUTION MENSUELLE").Bold().FontSize(12);
+            column.Item().PaddingBottom(5).Text(_L["monthly_evolution"]).Bold().FontSize(12);
 
             column.Item().Table(table =>
             {
@@ -194,18 +269,16 @@ public class FinancialReportPdfService
                     columns.RelativeColumn(1.5f);
                 });
 
-                // Header
                 table.Header(header =>
                 {
-                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text("Mois").FontColor(Colors.White).Bold().FontSize(9);
-                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text("Cotisations").FontColor(Colors.White).Bold().FontSize(9);
-                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text("Autres Rev.").FontColor(Colors.White).Bold().FontSize(9);
-                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text("Total Rev.").FontColor(Colors.White).Bold().FontSize(9);
-                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text("Dépenses").FontColor(Colors.White).Bold().FontSize(9);
-                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text("Résultat").FontColor(Colors.White).Bold().FontSize(9);
+                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text(_L["col_month"]).FontColor(Colors.White).Bold().FontSize(9);
+                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text(_L["col_contributions"]).FontColor(Colors.White).Bold().FontSize(9);
+                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text(_L["col_other_rev"]).FontColor(Colors.White).Bold().FontSize(9);
+                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text(_L["col_total_rev"]).FontColor(Colors.White).Bold().FontSize(9);
+                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text(_L["col_expenses"]).FontColor(Colors.White).Bold().FontSize(9);
+                    header.Cell().Background(Colors.Grey.Darken2).Padding(5).Text(_L["col_result"]).FontColor(Colors.White).Bold().FontSize(9);
                 });
 
-                // Rows
                 foreach (var month in monthlyData)
                 {
                     table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
@@ -232,7 +305,7 @@ public class FinancialReportPdfService
 
         container.Column(column =>
         {
-            column.Item().PaddingBottom(5).Text("Dépenses par catégorie").Bold().FontSize(11);
+            column.Item().PaddingBottom(5).Text(_L["expenses_by_cat"]).Bold().FontSize(11);
 
             column.Item().Table(table =>
             {
@@ -245,19 +318,16 @@ public class FinancialReportPdfService
 
                 table.Header(header =>
                 {
-                    header.Cell().Background(Colors.Red.Lighten3).Padding(4).Text("Catégorie").Bold().FontSize(9);
-                    header.Cell().Background(Colors.Red.Lighten3).Padding(4).Text("Montant").Bold().FontSize(9);
+                    header.Cell().Background(Colors.Red.Lighten3).Padding(4).Text(_L["col_category"]).Bold().FontSize(9);
+                    header.Cell().Background(Colors.Red.Lighten3).Padding(4).Text(_L["col_amount"]).Bold().FontSize(9);
                     header.Cell().Background(Colors.Red.Lighten3).Padding(4).Text("%").Bold().FontSize(9);
                 });
 
                 foreach (var expense in expenses)
                 {
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4)
-                        .Text(expense.CategoryName).FontSize(8);
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4)
-                        .Text(FormatAmount(expense.Amount)).FontSize(8);
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4)
-                        .Text($"{expense.Percent:F1}%").FontSize(8);
+                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4).Text(expense.CategoryName).FontSize(8);
+                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4).Text(FormatAmount(expense.Amount)).FontSize(8);
+                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4).Text($"{expense.Percent:F1}%").FontSize(8);
                 }
             });
         });
@@ -269,7 +339,7 @@ public class FinancialReportPdfService
 
         container.Column(column =>
         {
-            column.Item().PaddingBottom(5).Text("Autres revenus par type").Bold().FontSize(11);
+            column.Item().PaddingBottom(5).Text(_L["revenues_by_type"]).Bold().FontSize(11);
 
             column.Item().Table(table =>
             {
@@ -282,35 +352,29 @@ public class FinancialReportPdfService
 
                 table.Header(header =>
                 {
-                    header.Cell().Background(Colors.Green.Lighten3).Padding(4).Text("Titre").Bold().FontSize(9);
-                    header.Cell().Background(Colors.Green.Lighten3).Padding(4).Text("Montant").Bold().FontSize(9);
+                    header.Cell().Background(Colors.Green.Lighten3).Padding(4).Text(_L["col_title"]).Bold().FontSize(9);
+                    header.Cell().Background(Colors.Green.Lighten3).Padding(4).Text(_L["col_amount"]).Bold().FontSize(9);
                     header.Cell().Background(Colors.Green.Lighten3).Padding(4).Text("%").Bold().FontSize(9);
                 });
 
                 foreach (var revenue in revenues)
                 {
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4)
-                        .Text(revenue.Title).FontSize(8);
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4)
-                        .Text(FormatAmount(revenue.Amount)).FontSize(8);
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4)
-                        .Text($"{revenue.Percent:F1}%").FontSize(8);
+                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4).Text(revenue.Title).FontSize(8);
+                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4).Text(FormatAmount(revenue.Amount)).FontSize(8);
+                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(4).Text($"{revenue.Percent:F1}%").FontSize(8);
                 }
             });
         });
     }
 
-    private string FormatAmount(decimal amount)
-    {
-        return $"{amount:N2} MAD";
-    }
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    private string FormatAmount(decimal amount) => $"{amount:N2} MAD";
 
     private string FormatDate(string dateStr)
     {
         if (DateTime.TryParse(dateStr, out var date))
-        {
             return date.ToString("dd/MM/yyyy");
-        }
         return dateStr;
     }
 
@@ -319,9 +383,8 @@ public class FinancialReportPdfService
         var parts = monthStr.Split('-');
         if (parts.Length == 2 && int.TryParse(parts[1], out var month))
         {
-            var monthNames = new[] { "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", 
-                                     "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" };
-            return $"{monthNames[month - 1]} {parts[0]}";
+            var names = GetMonthNames();
+            return $"{names[month - 1]} {parts[0]}";
         }
         return monthStr;
     }

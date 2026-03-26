@@ -1,5 +1,11 @@
 namespace GestionSyndicale.Core.DTOs.Settings;
 
+public class ApartmentResidentDto
+{
+    public int Id { get; set; }
+    public string FullName { get; set; } = string.Empty;
+}
+
 /// <summary>
 /// DTO pour retourner un appartement
 /// </summary>
@@ -15,8 +21,9 @@ public class ApartmentDto
     public int SharesCount { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }    public string? MemberFullName { get; set; }
-    public int? MemberId { get; set; }}
+    public DateTime? UpdatedAt { get; set; }
+    public List<ApartmentResidentDto> Residents { get; set; } = new();
+}
 
 /// <summary>
 /// DTO pour créer un appartement

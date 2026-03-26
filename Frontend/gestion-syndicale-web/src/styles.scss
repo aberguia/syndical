@@ -10,6 +10,55 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif; 
 }
 
+/* Police arabe */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap');
+
+/* RTL global */
+[dir="rtl"] body {
+  font-family: 'Cairo', 'Roboto', sans-serif;
+}
+
+[dir="rtl"] .mat-sidenav {
+  right: 0 !important;
+  left: auto !important;
+}
+
+[dir="rtl"] .mat-sidenav-content {
+  margin-right: 250px !important;
+  margin-left: 0 !important;
+}
+
+[dir="rtl"] .mat-sidenav-container.mat-sidenav-container-has-open .mat-sidenav-content {
+  margin-right: 250px !important;
+  margin-left: 0 !important;
+}
+
+[dir="rtl"] mat-toolbar {
+  direction: rtl;
+}
+
+[dir="rtl"] .mat-toolbar .spacer {
+  flex: 1 1 auto;
+}
+
+[dir="rtl"] .mat-dialog-container {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .mat-form-field {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .mat-table {
+  direction: rtl;
+}
+
+[dir="rtl"] .mat-paginator {
+  direction: rtl;
+}
+
 /* Style global pour les badges Material - Amélioration visibilité */
 .mat-badge-content {
   font-weight: 700 !important;

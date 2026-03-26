@@ -25,6 +25,7 @@ import { EditNoteDialogComponent } from './edit-note-dialog.component';
 import { ViewNoteDialogComponent } from './view-note-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-notes',
@@ -44,7 +45,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatCardModule
+    MatCardModule,
+    TranslateModule
   ],
   templateUrl: './notes.component.html',
   styleUrls: ['./notes.component.scss']

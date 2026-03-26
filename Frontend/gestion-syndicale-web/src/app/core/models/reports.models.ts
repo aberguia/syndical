@@ -47,4 +47,5 @@ export interface CollectionRate {
 export interface GeneratePdfRequest {
   from: string;
   to: string;
+  lang?: string;
 }

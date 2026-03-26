@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ApartmentService } from '../../../core/services/apartment.service';
 import { Apartment, ApartmentDto, Building } from '../../../core/models/settings.models';
 
@@ -23,62 +24,57 @@ import { Apartment, ApartmentDto, Building } from '../../../core/models/settings
     MatSelectModule,
     MatButtonModule,
     MatSlideToggleModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ],
   template: `
-    <h2 mat-dialog-title>{{ data.apartment ? 'Modifier' : 'Ajouter' }} un appartement</h2>
-    
+    <h2 mat-dialog-title>{{ (data.apartment ? 'APARTMENTS.DIALOG_EDIT_TITLE' : 'APARTMENTS.DIALOG_ADD_TITLE') | translate }}</h2>
+
     <mat-dialog-content>
       <form [formGroup]="form">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Immeuble *</mat-label>
+          <mat-label>{{ 'APARTMENTS.FIELD_BUILDING' | translate }}</mat-label>
           <mat-select formControlName="buildingId">
             <mat-option *ngFor="let building of data.buildings" [value]="building.id">
               {{ building.buildingNumber }} - {{ building.name }}
             </mat-option>
           </mat-select>
           <mat-error *ngIf="form.get('buildingId')?.hasError('required')">
-            L'immeuble est requis
+            {{ 'COMMON.FIELD_REQUIRED' | translate }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Numéro d'appartement *</mat-label>
+          <mat-label>{{ 'APARTMENTS.FIELD_NUMBER' | translate }}</mat-label>
           <input matInput formControlName="apartmentNumber" placeholder="101, A1...">
           <mat-error *ngIf="form.get('apartmentNumber')?.hasError('required')">
-            Le numéro est requis
+            {{ 'COMMON.FIELD_REQUIRED' | translate }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Étage *</mat-label>
+          <mat-label>{{ 'APARTMENTS.FIELD_FLOOR' | translate }}</mat-label>
           <input matInput type="number" formControlName="floor" placeholder="1">
           <mat-error *ngIf="form.get('floor')?.hasError('required')">
-            L'étage est requis
-          </mat-error>
-          <mat-error *ngIf="form.get('floor')?.hasError('min')">
-            Minimum 0 (RDC)
+            {{ 'COMMON.FIELD_REQUIRED' | translate }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Surface (m²)</mat-label>
+          <mat-label>{{ 'APARTMENTS.FIELD_SURFACE' | translate }}</mat-label>
           <input matInput type="number" step="0.01" formControlName="surface" placeholder="65.5">
-          <mat-error *ngIf="form.get('surface')?.hasError('min')">
-            La surface doit être positive
-          </mat-error>
         </mat-form-field>
 
         <mat-slide-toggle formControlName="isActive" color="primary">
-          Actif
+          {{ 'APARTMENTS.FIELD_ACTIVE' | translate }}
         </mat-slide-toggle>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">Annuler</button>
+      <button mat-button (click)="onCancel()">{{ 'COMMON.CANCEL' | translate }}</button>
       <button mat-raised-button color="primary" (click)="onSave()" [disabled]="form.invalid || saving">
-        {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+        {{ (saving ? 'COMMON.SAVING' : 'COMMON.SAVE') | translate }}
       </button>
     </mat-dialog-actions>
   `,
@@ -102,6 +98,7 @@ export class ApartmentDialogComponent implements OnInit {
     private fb: FormBuilder,
     private apartmentService: ApartmentService,
     private snackBar: MatSnackBar,
+    private translate: TranslateService,
     public dialogRef: MatDialogRef<ApartmentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { apartment: Apartment | null; buildings: Building[] }
   ) {
@@ -139,8 +136,8 @@ export class ApartmentDialogComponent implements OnInit {
     request.subscribe({
       next: () => {
         this.snackBar.open(
-          this.data.apartment ? 'Appartement modifié avec succès' : 'Appartement créé avec succès',
-          'Fermer',
+          this.translate.instant('APARTMENTS.SAVE_SUCCESS'),
+          this.translate.instant('COMMON.CLOSE'),
           { duration: 3000 }
         );
         this.dialogRef.close(true);
@@ -151,7 +148,7 @@ export class ApartmentDialogComponent implements OnInit {
         if (error.status === 409 || error.error?.message?.includes('existe déjà')) {
           message = 'Cet appartement existe déjà pour cet immeuble';
         }
-        this.snackBar.open(message, 'Fermer', { duration: 5000 });
+        this.snackBar.open(message, this.translate.instant('COMMON.CLOSE'), { duration: 5000 });
         this.saving = false;
       }
     });

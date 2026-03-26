@@ -30,6 +30,13 @@ export interface MonthCheckbox {
   isPaid: boolean;
   isDisabled: boolean;
   isSelected: boolean;
+  markedForRemoval: boolean; // mois payé que l'user veut annuler
+}
+
+export interface CancelMonthlyPaymentDto {
+  apartmentId: number;
+  year: number;
+  months: number[];
 }
 
 export const MONTHS_FR = [

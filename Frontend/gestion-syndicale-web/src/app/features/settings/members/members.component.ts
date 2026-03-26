@@ -19,6 +19,8 @@ import { MemberListDto } from '../../../core/models/member.models';
 import { AddEditMemberDialogComponent } from './add-edit-member-dialog.component';
 import { ContactMemberDialogComponent } from './contact-member-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-members',
@@ -37,7 +39,9 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatDialogModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatTooltipModule,
+    TranslateModule
   ],
   templateUrl: './members.component.html',
   styleUrls: ['./members.component.scss']

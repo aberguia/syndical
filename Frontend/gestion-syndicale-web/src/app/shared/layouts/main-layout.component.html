@@ -9,6 +9,13 @@
     <span class="residence-name">{{ residenceName }}</span>
   </div>
   <span class="spacer"></span>
+  <button mat-button class="lang-switcher"
+    (click)="languageService.setLanguage(currentLang === 'fr' ? 'ar' : 'fr')"
+    [matTooltip]="currentLang === 'fr' ? 'العربية' : 'Français'">
+    <span class="lang-flag">{{ currentLang === 'fr' ? '🇲🇦' : '🇫🇷' }}</span>
+    <span class="lang-label">{{ currentLang === 'fr' ? 'AR' : 'FR' }}</span>
+  </button>
+
   <button mat-button [matMenuTriggerFor]="menu">
     <mat-icon>account_circle</mat-icon>
     <span class="user-name-label">{{ user?.firstName }} {{ user?.lastName }}</span>
@@ -16,7 +23,7 @@
   <mat-menu #menu="matMenu">
     <button mat-menu-item (click)="logout()">
       <mat-icon>exit_to_app</mat-icon>
-      Déconnexion
+      {{ 'LAYOUT.LOGOUT' | translate }}
     </button>
   </mat-menu>
 </mat-toolbar>
@@ -30,49 +37,49 @@
       <!-- Home -->
       <a mat-list-item routerLink="/dashboard" routerLinkActive="active" (click)="onNavItemClick(drawer)">
         <mat-icon matListItemIcon>dashboard</mat-icon>
-        <span matListItemTitle>Tableau de bord</span>
+        <span matListItemTitle>{{ 'NAV.DASHBOARD' | translate }}</span>
       </a>
 
       <!-- Administration (SuperAdmin/Admin) -->
       <div *ngIf="isSuperAdmin">
         <mat-list-item class="menu-header">
           <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
-          <span matListItemTitle>Administration</span>
+          <span matListItemTitle>{{ 'NAV.ADMINISTRATION' | translate }}</span>
         </mat-list-item>
 
         <a mat-list-item routerLink="/settings/buildings" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>apartment</mat-icon>
-          <span matListItemTitle>Immeubles</span>
+          <span matListItemTitle>{{ 'NAV.BUILDINGS' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/settings/apartments" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>meeting_room</mat-icon>
-          <span matListItemTitle>Appartements</span>
+          <span matListItemTitle>{{ 'NAV.APARTMENTS' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/settings/members" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Adhérents</span>
+          <span matListItemTitle>{{ 'NAV.MEMBERS' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/settings/notes" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>description</mat-icon>
-          <span matListItemTitle>Notes</span>
+          <span matListItemTitle>{{ 'NAV.NOTES' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/admin/suppliers" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>store</mat-icon>
-          <span matListItemTitle>Fournisseurs</span>
+          <span matListItemTitle>{{ 'NAV.SUPPLIERS' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/admin/announcements" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>campaign</mat-icon>
-          <span matListItemTitle>Annonces</span>
+          <span matListItemTitle>{{ 'NAV.ANNOUNCEMENTS' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/admin/polls" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>poll</mat-icon>
-          <span matListItemTitle>Sondages</span>
+          <span matListItemTitle>{{ 'NAV.POLLS' | translate }}</span>
         </a>
       </div>
 
@@ -80,17 +87,17 @@
       <div *ngIf="!isSuperAdmin">
         <mat-list-item class="menu-header">
           <mat-icon matListItemIcon>group</mat-icon>
-          <span matListItemTitle>Communauté</span>
+          <span matListItemTitle>{{ 'NAV.COMMUNITY' | translate }}</span>
         </mat-list-item>
 
         <a mat-list-item routerLink="/portal/announcements" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>announcement</mat-icon>
-          <span matListItemTitle>Annonces</span>
+          <span matListItemTitle>{{ 'NAV.ANNOUNCEMENTS' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/portal/polls" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>how_to_vote</mat-icon>
-          <span matListItemTitle>Sondages</span>
+          <span matListItemTitle>{{ 'NAV.POLLS' | translate }}</span>
         </a>
       </div>
 
@@ -98,17 +105,17 @@
       <div *ngIf="isSuperAdmin">
         <mat-list-item class="menu-header">
           <mat-icon matListItemIcon>local_parking</mat-icon>
-          <span matListItemTitle>Parking</span>
+          <span matListItemTitle>{{ 'NAV.PARKING' | translate }}</span>
         </mat-list-item>
 
         <a mat-list-item routerLink="/parking/cars" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>directions_car</mat-icon>
-          <span matListItemTitle>Voitures</span>
+          <span matListItemTitle>{{ 'NAV.CARS' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/parking/places" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>event_seat</mat-icon>
-          <span matListItemTitle>Places</span>
+          <span matListItemTitle>{{ 'NAV.PLACES' | translate }}</span>
         </a>
       </div>
 
@@ -116,22 +123,22 @@
       <div *ngIf="isSuperAdmin">
         <mat-list-item class="menu-header">
           <mat-icon matListItemIcon>attach_money</mat-icon>
-          <span matListItemTitle>Finances</span>
+          <span matListItemTitle>{{ 'NAV.FINANCES' | translate }}</span>
         </mat-list-item>
 
         <a mat-list-item routerLink="/finances/revenues" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>trending_up</mat-icon>
-          <span matListItemTitle>Revenus</span>
+          <span matListItemTitle>{{ 'NAV.REVENUES' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/finances/expenses" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>receipt</mat-icon>
-          <span matListItemTitle>Dépenses</span>
+          <span matListItemTitle>{{ 'NAV.EXPENSES' | translate }}</span>
         </a>
 
         <a mat-list-item routerLink="/finances/reports" routerLinkActive="active" class="submenu-item" (click)="onNavItemClick(drawer)">
           <mat-icon matListItemIcon>assessment</mat-icon>
-          <span matListItemTitle>Bilans</span>
+          <span matListItemTitle>{{ 'NAV.REPORTS' | translate }}</span>
         </a>
       </div>
     </mat-nav-list>

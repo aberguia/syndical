@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApartmentPaidMonths, ApartmentPaymentStatus, CreatePaymentDto } from '../models/payment.models';
+import { ApartmentPaidMonths, ApartmentPaymentStatus, CancelMonthlyPaymentDto, CreatePaymentDto } from '../models/payment.models';
 
 export interface ApartmentBalance {
   apartmentId: number;
@@ -103,6 +103,10 @@ export class PaymentService {
    */
   createMonthlyPayment(dto: CreatePaymentDto): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/apartment`, dto);
+  }
+
+  cancelMonthlyPayments(dto: CancelMonthlyPaymentDto): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/monthly/cancel`, dto);
   }
 
   /**

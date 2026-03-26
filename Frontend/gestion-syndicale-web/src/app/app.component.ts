@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { LanguageService } from './core/services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +8,12 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   template: '<router-outlet></router-outlet>'
 })
-export class AppComponent {
-  title = 'gestion-syndicale-web'; 
+export class AppComponent implements OnInit {
+  title = 'gestion-syndicale-web';
+
+  constructor(private languageService: LanguageService) {}
+
+  ngOnInit(): void {
+    this.languageService.init();
+  }
 }

@@ -39,7 +39,7 @@ public class PaymentService : IPaymentService
             // Vérifier que l'appartement existe
             var apartment = await _context.Apartments
                 .Include(a => a.Building)
-                .Include(a => a.PrimaryOwner)
+                .Include(a => a.Residents)
                 .FirstOrDefaultAsync(a => a.Id == dto.ApartmentId);
 
             if (apartment == null)
@@ -124,22 +124,24 @@ public class PaymentService : IPaymentService
             // Commit de la transaction
             await transaction.CommitAsync();
 
-            // Envoyer le reçu par email (asynchrone, ne pas attendre)
-            if (apartment.PrimaryOwner != null)
+            // Envoyer le reçu par email et notifier tous les résidents
+            foreach (var resident in apartment.Residents)
             {
-                _ = Task.Run(async () =>
+                if (!string.IsNullOrEmpty(resident.Email))
                 {
-                    await _emailService.SendPaymentReceiptEmailAsync(
-                        apartment.PrimaryOwner.Email,
-                        apartment.PrimaryOwner.FirstName,
-                        payment.Amount,
-                        receiptPath
-                    );
-                });
+                    _ = Task.Run(async () =>
+                    {
+                        await _emailService.SendPaymentReceiptEmailAsync(
+                            resident.Email,
+                            resident.FirstName,
+                            payment.Amount,
+                            receiptPath
+                        );
+                    });
+                }
 
-                // Créer une notification
                 await _notificationService.CreateNotificationAsync(
-                    apartment.PrimaryOwner.Id,
+                    resident.Id,
                     "Paiement enregistré",
                     $"Votre paiement de {payment.Amount:C} a été enregistré avec succès.",
                     "Payment",
@@ -299,9 +301,9 @@ public class PaymentService : IPaymentService
             ApartmentId = apartmentId
         };
 
-        // Récupérer tous les paiements de l'appartement, triés par année/mois
+        // Récupérer tous les paiements actifs (non annulés) de l'appartement, triés par année/mois
         var allPayments = await _context.MonthlyPayments
-            .Where(mp => mp.ApartmentId == apartmentId)
+            .Where(mp => mp.ApartmentId == apartmentId && mp.IsPaid)
             .OrderByDescending(mp => mp.Year)
             .ThenByDescending(mp => mp.Month)
             .ToListAsync();
@@ -564,7 +566,7 @@ public class PaymentService : IPaymentService
     public async Task<PaymentsSummaryDto> GetPaymentsSummaryByYearAsync(int year)
     {
         var summary = await _context.MonthlyPayments
-            .Where(mp => mp.Year == year)
+            .Where(mp => mp.Year == year && mp.IsPaid)
             .GroupBy(mp => mp.ApartmentId)
             .Select(g => new ApartmentPaymentSummaryDto
             {
@@ -586,7 +588,7 @@ public class PaymentService : IPaymentService
     public async Task<BuildingsPaymentsSummaryDto> GetBuildingsPaymentsSummaryByYearAsync(int year)
     {
         var summary = await _context.MonthlyPayments
-            .Where(mp => mp.Year == year)
+            .Where(mp => mp.Year == year && mp.IsPaid)
             .Join(
                 _context.Apartments,
                 mp => mp.ApartmentId,

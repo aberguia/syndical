@@ -21,6 +21,7 @@ import {
   RevenuesTotal 
 } from '../../../core/models/revenues.models';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import { AddEditOtherRevenueDialogComponent } from './add-edit-other-revenue-dialog.component';
 import { RevenueAttachmentsDialogComponent } from './revenue-attachments-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
@@ -43,7 +44,8 @@ import { PaymentDialogComponent } from '../../settings/apartments/payment-dialog
     MatProgressSpinnerModule,
     MatCardModule,
     MatTooltipModule,
-    MatBadgeModule
+    MatBadgeModule,
+    TranslateModule
   ],
   templateUrl: './revenues.component.html',
   styleUrl: './revenues.component.scss'

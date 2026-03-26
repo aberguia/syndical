@@ -56,4 +56,5 @@ public class GeneratePdfRequest
 {
     public string From { get; set; } = string.Empty;
     public string To { get; set; } = string.Empty;
+    public string Lang { get; set; } = "fr";
 }

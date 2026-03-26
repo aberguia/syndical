@@ -84,16 +84,10 @@ public class MemberService : IMemberService
 
     public async Task<MemberListDto> CreateMemberAsync(CreateMemberDto dto)
     {
-        // Validation email unique
-        if (await EmailExistsAsync(dto.Email))
+        // Validation email unique (seulement si email fourni)
+        if (!string.IsNullOrEmpty(dto.Email) && await EmailExistsAsync(dto.Email))
         {
             throw new InvalidOperationException($"Un compte avec l'email {dto.Email} existe déjà.");
-        }
-
-        // Validation appartement unique
-        if (dto.ApartmentId.HasValue && await ApartmentAlreadyAssignedAsync(dto.ApartmentId.Value))
-        {
-            throw new InvalidOperationException("Cet appartement est déjà attribué à un autre adhérent.");
         }
 
         // Vérifier que l'appartement existe
@@ -114,7 +108,7 @@ public class MemberService : IMemberService
         {
             FirstName = dto.FirstName,
             LastName = dto.LastName,
-            Email = dto.Email,
+            Email = string.IsNullOrEmpty(dto.Email) ? null : dto.Email,
             Phone = dto.PhoneNumber,
             PasswordHash = passwordHash,
             IsActive = true,
@@ -140,15 +134,18 @@ public class MemberService : IMemberService
             await _context.SaveChangesAsync();
         }
 
-        // Envoyer email de bienvenue avec mot de passe temporaire
-        try
+        // Envoyer email de bienvenue avec mot de passe temporaire (seulement si email fourni)
+        if (!string.IsNullOrEmpty(newUser.Email))
         {
-            await _emailService.SendWelcomeEmailAsync(newUser.Email, newUser.FirstName, temporaryPassword);
-        }
-        catch (Exception ex)
-        {
-            // Log l'erreur mais ne pas bloquer la création
-            Console.WriteLine($"Erreur envoi email bienvenue: {ex.Message}");
+            try
+            {
+                await _emailService.SendWelcomeEmailAsync(newUser.Email, newUser.FirstName, temporaryPassword);
+            }
+            catch (Exception ex)
+            {
+                // Log l'erreur mais ne pas bloquer la création
+                Console.WriteLine($"Erreur envoi email bienvenue: {ex.Message}");
+            }
         }
 
         // Retourner le membre créé avec ses relations
@@ -166,16 +163,10 @@ public class MemberService : IMemberService
             throw new InvalidOperationException("Adhérent introuvable.");
         }
 
-        // Validation email unique (exclure l'utilisateur actuel)
-        if (await EmailExistsAsync(dto.Email, id))
+        // Validation email unique (exclure l'utilisateur actuel, seulement si email fourni)
+        if (!string.IsNullOrEmpty(dto.Email) && await EmailExistsAsync(dto.Email, id))
         {
             throw new InvalidOperationException($"Un autre compte avec l'email {dto.Email} existe déjà.");
-        }
-
-        // Validation appartement unique (exclure l'utilisateur actuel)
-        if (dto.ApartmentId.HasValue && await ApartmentAlreadyAssignedAsync(dto.ApartmentId.Value, id))
-        {
-            throw new InvalidOperationException("Cet appartement est déjà attribué à un autre adhérent.");
         }
 
         // Vérifier que l'appartement existe
@@ -191,7 +182,7 @@ public class MemberService : IMemberService
         // Mise à jour des champs
         user.FirstName = dto.FirstName;
         user.LastName = dto.LastName;
-        user.Email = dto.Email;
+        user.Email = string.IsNullOrEmpty(dto.Email) ? null : dto.Email;
         user.Phone = dto.PhoneNumber;
         user.IsActive = dto.IsActive;
         user.ApartmentId = dto.ApartmentId;
